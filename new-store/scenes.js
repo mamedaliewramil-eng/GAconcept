@@ -4,6 +4,7 @@
 (() => {
   const scenes = [1,2,3].map(number => document.getElementById(`scene-${number}`));
   const header = document.querySelector('.site-header');
+  const heroBackdrop = document.getElementById('hero-carousel');
   const motion = matchMedia('(prefers-reduced-motion: reduce)');
   let anchors = [0,0,0];
   let current = 0;
@@ -20,6 +21,7 @@
   let wheelDirection = 0;
   let gestureUsed = false;
   let touch;
+  let lastBackdropOpacity;
   const QUIET_GAP = 220;
   const surfaces = [
     [...scenes[0].querySelectorAll('.hero-copy,.hero-bottom')],
@@ -59,6 +61,11 @@
 
   function update() {
     const y = Math.max(0,scrollY);
+    const backdropOpacity = (anchors[1] > 0 ? Math.max(0,Math.min(1,1 - y / anchors[1])) : 1).toFixed(4);
+    if (backdropOpacity !== lastBackdropOpacity) {
+      heroBackdrop.style.setProperty('--hero-backdrop-opacity',backdropOpacity);
+      lastBackdropOpacity = backdropOpacity;
+    }
     current = y < anchors[1] / 2 ? 0 : y < (anchors[1] + anchors[2]) / 2 ? 1 : 2;
     document.body.dataset.scene = String(current + 1);
     scenes.forEach((scene,index) => scene.dataset.active = String(index === current));

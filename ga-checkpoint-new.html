@@ -224,6 +224,12 @@ html{scroll-behavior:auto;scroll-padding-top:var(--header-height)}
 .scroll-scene[data-transitioning=true] [data-transition-surface]{transform:translate3d(0,var(--scene-shift,0px),0);opacity:var(--scene-opacity,1);transition:none!important;will-change:transform,opacity}
 @media(prefers-reduced-motion:reduce){.scroll-scene[data-transitioning=true] [data-transition-surface]{transform:none;opacity:1;will-change:auto}}
 
+/* Fade the introductory photo into the normal page background, never across the site. */
+body{background-color:var(--paper);background-image:none}
+#scene-1,#scene-1 .hero.hero-carousel{background:var(--paper)}
+#scene-1 #hero-slides{z-index:-2;opacity:var(--hero-backdrop-opacity,1)}
+#scene-1 .hero-shade{opacity:var(--hero-backdrop-opacity,1)}
+
 </style>
 </head>
 <body>
@@ -752,6 +758,7 @@ syncHeroRotation();
 (() => {
   const scenes = [1,2,3].map(number => document.getElementById(`scene-${number}`));
   const header = document.querySelector('.site-header');
+  const heroBackdrop = document.getElementById('hero-carousel');
   const motion = matchMedia('(prefers-reduced-motion: reduce)');
   let anchors = [0,0,0];
   let current = 0;
@@ -768,6 +775,7 @@ syncHeroRotation();
   let wheelDirection = 0;
   let gestureUsed = false;
   let touch;
+  let lastBackdropOpacity;
   const QUIET_GAP = 220;
   const surfaces = [
     [...scenes[0].querySelectorAll('.hero-copy,.hero-bottom')],
@@ -807,6 +815,11 @@ syncHeroRotation();
 
   function update() {
     const y = Math.max(0,scrollY);
+    const backdropOpacity = (anchors[1] > 0 ? Math.max(0,Math.min(1,1 - y / anchors[1])) : 1).toFixed(4);
+    if (backdropOpacity !== lastBackdropOpacity) {
+      heroBackdrop.style.setProperty('--hero-backdrop-opacity',backdropOpacity);
+      lastBackdropOpacity = backdropOpacity;
+    }
     current = y < anchors[1] / 2 ? 0 : y < (anchors[1] + anchors[2]) / 2 ? 1 : 2;
     document.body.dataset.scene = String(current + 1);
     scenes.forEach((scene,index) => scene.dataset.active = String(index === current));

@@ -214,3 +214,9 @@ html{scroll-behavior:auto;scroll-padding-top:var(--header-height)}
 /* A slower, directional slide for each scene, without moving its layout anchor. */
 .scroll-scene[data-transitioning=true] [data-transition-surface]{transform:translate3d(0,var(--scene-shift,0px),0);opacity:var(--scene-opacity,1);transition:none!important;will-change:transform,opacity}
 @media(prefers-reduced-motion:reduce){.scroll-scene[data-transitioning=true] [data-transition-surface]{transform:none;opacity:1;will-change:auto}}
+
+/* Fade the introductory photo into the normal page background, never across the site. */
+body{background-color:var(--paper);background-image:none}
+#scene-1,#scene-1 .hero.hero-carousel{background:var(--paper)}
+#scene-1 #hero-slides{z-index:-2;opacity:var(--hero-backdrop-opacity,1)}
+#scene-1 .hero-shade{opacity:var(--hero-backdrop-opacity,1)}
