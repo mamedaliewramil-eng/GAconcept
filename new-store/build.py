@@ -19,6 +19,7 @@ css = css.replace('assets/products-2.png', embedded('assets/products-2.png','ima
 css = css.replace('assets/products-3.png', embedded('assets/products-3.png','image/png'))
 css = css.replace('assets/products-4.png', embedded('assets/products-4.png','image/png'))
 css = css.replace('assets/products-5.png', embedded('assets/products-5.png','image/png'))
+css = css.replace('assets/products-6.png', embedded('assets/products-6.png','image/png'))
 css = css.replace('assets/nautical-compass.png', embedded('assets/nautical-compass.png','image/png'))
 html = html.replace('<link rel="stylesheet" href="styles.css">', '<style>\n' + css + '\n</style>')
 html = html.replace('assets/hero.png', embedded('assets/hero.png','image/png'))

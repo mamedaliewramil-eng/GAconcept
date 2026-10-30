@@ -31,7 +31,9 @@ const PRODUCTS = Object.freeze([
   {id:'marine-usb-charger',name:'Marine USB Charging Socket',category:'electronics',price:29,sheet:5,position:'100% 0%',tag:'A USEFUL CONNECTION',description:'A black round dual USB socket with a rubber cover. Match the connection and electrical ratings to your installation.',features:['Round black mounting body','Two USB openings','Rubber cover'],photo:'black round dual USB charging socket with a rubber cover'},
   {id:'mushroom-anchor',name:'Mooring Mushroom Anchor',category:'essentials',price:45,sheet:5,position:'0% 100%',tag:'FIND YOUR PLACE',description:'A black mushroom-style anchor with a rounded base and curved shaft. Choose the weight and style for your boat and mooring conditions.',features:['Rounded mushroom base','Curved central shaft','Black finish'],photo:'black mushroom anchor with a curved shaft'},
   {id:'dry-storage-box',name:'Dry Storage Box',category:'essentials',price:49,sheet:5,position:'50% 100%',tag:'ROOM FOR THE ESSENTIALS',description:'An orange hard-sided storage box with black latches, keeping small pieces of your boating kit together.',features:['Orange hard case','Black latch closures','Compact rectangular shape'],photo:'orange hard storage box with black latches'},
-  {id:'fishing-rod-holder',name:'Clamp-Mount Rod Holder',category:'essentials',price:59,sheet:5,position:'100% 100%',tag:'MAKE ROOM FOR THE DAY',description:'A polished metal rod holder with a cylindrical tube and clamp mount. Match the clamp and mounting position to your boat.',features:['Polished tubular holder','Clamp mounting bracket','Adjustable mounting arrangement'],photo:'polished stainless clamp-mount fishing rod holder'}
+  {id:'fishing-rod-holder',name:'Clamp-Mount Rod Holder',category:'essentials',price:59,sheet:5,position:'100% 100%',tag:'MAKE ROOM FOR THE DAY',description:'A polished metal rod holder with a cylindrical tube and clamp mount. Match the clamp and mounting position to your boat.',features:['Polished tubular holder','Clamp mounting bracket','Adjustable mounting arrangement'],photo:'polished stainless clamp-mount fishing rod holder'},
+  {id:'harbour-lifering',name:'Harbour Lifebuoy Ring',category:'essentials',price:79,sheet:6,position:'0% 0%',tag:'LOOK AFTER YOUR CREW',description:'An orange circular lifebuoy with four white bands and a rope around the outside. Choose equipment suited to your vessel and the people aboard.',features:['Orange circular ring','Four white bands','White perimeter rope'],photo:'orange marine lifebuoy ring with white bands and a white rope'},
+  {id:'portable-marine-fuel-tank',name:'Portable Marine Fuel Tank',category:'essentials',price:89,sheet:6,position:'50% 0%',tag:'READY FOR THE NEXT LEG',description:'A red portable tank with a moulded carry handle, black screw cap and small connector. Match the tank and connection to your engine setup.',features:['Red moulded body','Integrated carry handle','Black cap and connector'],photo:'red portable marine fuel tank with a carry handle and black cap'}
 ]);
 // Edit this ordered list to choose the fourth-screen showcase. All IDs also live in PRODUCTS.
 // The showcase is independent of catalog search, filters, saved-only mode and sorting.
@@ -43,7 +45,7 @@ const CATEGORIES = {all:'All gear',boats:'Boats & inflatables',electronics:'Mari
 const byId = new Map(PRODUCTS.map(product => [product.id,product]));
 const PHOTO_SHEET_CLASSES = Object.freeze({
   2:'product-photo--second',3:'product-photo--third',
-  4:'product-photo--fourth',5:'product-photo--fifth'
+  4:'product-photo--fourth',5:'product-photo--fifth',6:'product-photo--sixth'
 });
 const STORAGE_KEY = 'gaFreshMarineStoreV1';
 const $ = selector => document.querySelector(selector);
@@ -212,14 +214,13 @@ function renderCatalog(focusSavedId,focusRailId) {
   const showcase = showcaseProducts();
   productObserver?.disconnect();
   $('#product-grid').innerHTML = visible.map(productMarkup).join('');
-  layoutCatalogRows();
-  $('#product-grid').scrollLeft = 0;
   $('#secondary-grid').innerHTML = showcase.map(productMarkup).join('');
   $('#secondary-collection').hidden = !showcase.length;
   $('#secondary-empty').hidden = !!showcase.length;
   $('#mid-banner').hidden = false;
   $('#product-grid').hidden = !visible.length;
   $('#empty-state').hidden = !!visible.length;
+  layoutCatalogRows({reset:true});
   $('#empty-message').textContent = state.savedOnly ? 'Save a product with the heart to keep your next good find here.' : 'Try a different search or clear your filters.';
   $('#catalog-title').textContent = state.savedOnly ? 'YOUR NEXT GOOD FINDS.' : state.category === 'boats' ? 'YOUR WAY OUT.' : state.category === 'electronics' ? 'FIND YOUR HEADING.' : state.category === 'essentials' ? 'BRING THE GOOD.' : 'GOOD TO GO.';
   $('#result-count').textContent = `${visible.length} ${state.savedOnly ? 'saved ' : ''}${visible.length === 1 ? 'item' : 'items'}`;
@@ -305,7 +306,6 @@ function toggleSaved(id,source = document.activeElement) {
 
 function reconcileSavedCatalog() {
   const rail = $('#product-grid');
-  const left = rail.scrollLeft;
   const focused = document.activeElement;
   const focusedCard = focused?.closest('#product-grid .product-card');
   const cards = new Map([...rail.children].map(card => [card.dataset.productId,card]));
@@ -331,7 +331,6 @@ function reconcileSavedCatalog() {
   $('#empty-state').hidden = !!visible.length;
   $('#result-count').textContent = `${visible.length} saved ${visible.length === 1 ? 'item' : 'items'}`;
   layoutCatalogRows();
-  rail.scrollLeft = left;
   updateRailControls();
   if (focusedCard && !focused.isConnected) {
     (rail.querySelector('[data-save]') || $('#wishlist-toggle')).focus({preventScroll:true});
@@ -415,16 +414,41 @@ function removeBagLine(id) {
   showToast(`${product?.name || 'Product'} removed from your bag.`);
 }
 
-function layoutCatalogRows() {
+function catalogPageMetrics() {
   const rail = $('#product-grid');
-  const columns = Math.max(1,parseInt(getComputedStyle(rail).getPropertyValue('--catalog-columns'),10) || 6);
+  const style = getComputedStyle(rail);
+  const columns = Math.max(1,parseInt(style.getPropertyValue('--catalog-columns'),10) || 6);
+  return {columns,pages:Math.max(1,Math.ceil(rail.children.length / (columns * 2))),stride:rail.clientWidth + (parseFloat(style.columnGap) || 0)};
+}
+
+function layoutCatalogRows({reset = false} = {}) {
+  const rail = $('#product-grid');
+  const {columns,pages,stride} = catalogPageMetrics();
+  const oldColumns = Number(rail.dataset.catalogColumns) || columns;
+  const oldStride = Number(rail.dataset.catalogStride) || stride;
+  const oldPage = oldStride ? Math.round(rail.scrollLeft / oldStride) : 0;
+  const page = reset ? 0 : Math.min(pages - 1,Math.floor(oldPage * oldColumns / columns));
+  // Reserve complete pages so only the final page can have unfilled cells.
+  rail.style.setProperty('--catalog-total-columns',String(pages * columns));
+  rail.dataset.catalogColumns = String(columns);
+  rail.dataset.catalogStride = String(stride);
   // Fill each horizontal page across its first row, then across its second row.
   [...rail.children].forEach((card,index) => {
     const page = Math.floor(index / (columns * 2));
     const slot = index % (columns * 2);
     card.style.gridRowStart = String(Math.floor(slot / columns) + 1);
     card.style.gridColumnStart = String(page * columns + slot % columns + 1);
+    card.classList.toggle('catalog-page-start',slot === 0);
   });
+  rail.scrollTo({left:page * stride,behavior:'instant'});
+}
+
+function scrollCatalogPage(direction) {
+  const rail = $('#product-grid');
+  const {pages,stride} = catalogPageMetrics();
+  const currentPage = stride ? Math.round(rail.scrollLeft / stride) : 0;
+  const nextPage = Math.max(0,Math.min(pages - 1,currentPage + direction));
+  rail.scrollTo({left:nextPage * stride,behavior:reducedMotion() ? 'instant' : 'smooth'});
 }
 
 function updateRailControls() {
@@ -517,7 +541,9 @@ $$('[data-copy-image]').forEach(image => {
 });
 $$('[data-rail]').forEach(button => button.addEventListener('click',() => {
   const rail = document.getElementById(button.dataset.rail);
-  rail.scrollBy({left:Math.max(240,rail.clientWidth * .8) * Number(button.dataset.direction),behavior:reducedMotion() ? 'auto' : 'smooth'});
+  const direction = Number(button.dataset.direction);
+  if (rail.id === 'product-grid') scrollCatalogPage(direction);
+  else rail.scrollBy({left:Math.max(240,rail.clientWidth * .8) * direction,behavior:reducedMotion() ? 'auto' : 'smooth'});
 }));
 $$('.product-rail').forEach(rail => rail.addEventListener('scroll',() => { updateRailControls();scheduleCardReveal(); },{passive:true}));
 window.addEventListener('resize',() => { layoutCatalogRows();updateRailControls(); },{passive:true});
