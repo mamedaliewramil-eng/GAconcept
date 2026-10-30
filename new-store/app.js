@@ -1,22 +1,50 @@
 'use strict';
 
-// Original concept catalog. These are illustrative products, not live inventory.
+// Store catalog and product details.
 const PRODUCTS = Object.freeze([
-  {id:'coastal-rib',name:'Coastal RIB 360',category:'boats',price:3495,position:'0% 0%',tag:'THE WAY OUT',description:'A compact inflatable concept for discovering a little more coastline. Room for your next plan, without making a big production of it.',features:['Compact rigid inflatable concept','Open-deck arrangement','Coastal adventures, your way'],photo:'Concept grey rigid inflatable boat'},
-  {id:'horizon-chartplotter',name:'Horizon 9 Chartplotter',category:'electronics',price:1199,position:'50% 0%',tag:'FIND YOUR HEADING',description:'A navigation display concept that puts your next heading in focus. A clean, clear companion for the days you take the long way.',features:['Nine-inch display concept','Simple chart-focused interface','Designed for a marine helm'],photo:'Concept black marine navigation display with a nautical chart'},
-  {id:'performance-propeller',name:'Performance 3-Blade Propeller',category:'essentials',price:289,position:'100% 0%',tag:'FINE-TUNED',description:'A polished three-blade propeller concept inspired by clean lines and smooth days on the water. Actual engine compatibility must always be verified.',features:['Three-blade stainless steel concept','Polished metal finish','Illustrative fitment; not model-specific'],photo:'Concept polished stainless steel three-blade marine propeller'},
-  {id:'offshore-vest',name:'Offshore Buoyancy Vest',category:'essentials',price:119,position:'0% 100%',tag:'BRING THE GOOD',description:'A bright buoyancy vest concept for a thoughtfully packed day out. This illustration is not a certified safety product or a substitute for approved equipment.',features:['High-visibility orange design concept','Adjustable strap illustration','Use certified, properly fitted safety equipment on the water'],photo:'Concept orange and charcoal marine buoyancy vest'},
-  {id:'tidal-speakers',name:'Tidal Marine Speaker Pair',category:'electronics',price:249,position:'50% 100%',tag:'SET THE TONE',description:'A pair of marine speaker concepts for an easy-going soundtrack. Clean white grilles keep the look as simple as the day ahead.',features:['Pair of round speaker concepts','Clean white grille design','Illustrative marine audio collection'],photo:'Concept pair of white round marine speakers'},
-  {id:'drift-drybag',name:'Drift 20L Dry Bag',category:'essentials',price:59,position:'100% 100%',tag:'PACK LIGHT',description:'A roll-top dry bag concept for keeping your everyday essentials together. A little colour for wherever your plans take you.',features:['Twenty-litre capacity concept','Orange roll-top design','Lightweight grab-and-go silhouette'],photo:'Concept orange roll-top dry bag'},
-  {id:'waypoint-radio',name:'Waypoint Handheld VHF',category:'electronics',price:179,sheet:2,position:'0% 0%',tag:'STAY CONNECTED',description:'A compact handheld marine radio concept inspired by keeping in touch with the crew. This is an illustrative design, not certified communications equipment.',features:['Handheld marine radio concept','Compact black case and antenna','No certified radio specifications are claimed'],photo:'Concept black handheld marine radio with an antenna'},
-  {id:'harbour-dockline',name:'Harbour Dockline Set',category:'essentials',price:39,sheet:2,position:'50% 0%',tag:'TIE IT TOGETHER',description:'A neatly coiled dockline concept for the quiet moments between adventures. A useful finishing touch for a well-considered day on the water.',features:['Navy braided rope design concept','Looped end detail','Actual rope size and suitability must be verified'],photo:'Concept coiled navy blue dockline with a loop'},
-  {id:'daybreak-cooler',name:'Daybreak 30L Cooler',category:'essentials',price:189,sheet:2,position:'100% 0%',tag:'STAY A LITTLE LONGER',description:'A compact cooler concept that makes room for another hour outside. Clean, simple design for the little things that make the day.',features:['Thirty-litre capacity concept','Light-coloured hard shell design','Carry handle illustration'],photo:'Concept cream hard-sided cooler with a dark carrying handle'},
-  {id:'tide-deckboots',name:'Tide Deck Boots',category:'essentials',price:89,sheet:2,position:'0% 100%',tag:'FIND YOUR FOOTING',description:'A pair of ankle deck-boot concepts with a clean charcoal finish. Choose actual footwear based on fit and verified conditions of use.',features:['Ankle-height boot concept','Charcoal finish','No performance or safety certification is claimed'],photo:'Concept pair of charcoal waterproof ankle deck boots'},
-  {id:'compact-footpump',name:'Compact Foot Pump',category:'essentials',price:49,sheet:2,position:'50% 100%',tag:'READY TO GO',description:'A compact foot-pump concept for the practical side of getting out there. Light, simple and easy to picture in your kit.',features:['Foot-operated pump concept','Compact bellows design','Check valve and hose compatibility on actual equipment'],photo:'Concept black bellows foot pump with a flexible hose'},
-  {id:'coastal-anchor',name:'Coastal Stainless Anchor',category:'essentials',price:149,sheet:2,position:'100% 100%',tag:'STAY FOR A WHILE',description:'A stainless anchor concept for the places that make you want to stay. Actual anchoring equipment must be selected for the vessel and conditions.',features:['Polished stainless anchor concept','Compact fluke design','Boat suitability and holding performance are not specified'],photo:'Concept small polished stainless steel marine anchor'}
+  {id:'coastal-rib',name:'Coastal RIB 360',category:'boats',price:3495,position:'0% 0%',tag:'THE WAY OUT',description:"A compact grey rigid inflatable with an open deck, bench seating and a clean, practical layout for coastal days.",features:["Grey inflatable tubes","Open deck and bench seating","Compact rigid hull layout"],photo:"grey rigid inflatable boat"},
+  {id:'horizon-chartplotter',name:'Horizon 9 Chartplotter',category:'electronics',price:1199,position:'50% 0%',tag:'FIND YOUR HEADING',description:"A black chartplotter with a wide display and a clear nautical-chart layout, designed to sit neatly at the helm.",features:["Black display housing","Nautical chart interface","Compact helm mounting profile"],photo:"black marine navigation display with a nautical chart"},
+  {id:'performance-propeller',name:'Performance 3-Blade Propeller',category:'essentials',price:289,position:'100% 0%',tag:'FINE-TUNED',description:"A polished three-blade propeller with a simple metal finish. Check the engine and hub fit when choosing your setup.",features:["Three-blade shape","Polished metal finish","Check engine and hub fit"],photo:"polished stainless steel three-blade marine propeller"},
+  {id:'offshore-vest',name:'Offshore Buoyancy Vest',category:'essentials',price:119,position:'0% 100%',tag:'BRING THE GOOD',description:"A bright orange and charcoal vest with a front closure and adjustable straps. Choose a comfortable fit for the person wearing it.",features:["Orange and charcoal panels","Adjustable strap arrangement","Front closure"],photo:"orange and charcoal marine buoyancy vest"},
+  {id:'tidal-speakers',name:'Tidal Marine Speaker Pair',category:'electronics',price:249,position:'50% 100%',tag:'SET THE TONE',description:"A pair of round white marine speakers with clean grilles and a compact profile for the boat.",features:["Pair of round speaker grilles","Clean white finish","Low-profile design"],photo:"pair of white round marine speakers"},
+  {id:'drift-drybag',name:'Drift 20L Dry Bag',category:'essentials',price:59,position:'100% 100%',tag:'PACK LIGHT',description:"An orange roll-top bag with a carry handle and a simple strap arrangement for keeping your kit together.",features:["Orange roll-top closure","Carry handle and strap","Simple soft-sided shape"],photo:"orange roll-top dry bag"},
+  {id:'waypoint-radio',name:'Waypoint Handheld VHF',category:'electronics',price:179,sheet:2,position:'0% 0%',tag:'STAY CONNECTED',description:"A compact black handheld VHF radio with an antenna, front display and easy-to-reach controls.",features:["Black handheld housing","Front screen and controls","Top-mounted antenna"],photo:"black handheld marine radio with an antenna"},
+  {id:'harbour-dockline',name:'Harbour Dockline Set',category:'essentials',price:39,sheet:2,position:'50% 0%',tag:'TIE IT TOGETHER',description:"A neatly coiled navy dockline with a looped end. Choose the rope size to suit the boat and docking points.",features:["Navy braided rope","Coiled arrangement","Looped end"],photo:"coiled navy blue dockline with a loop"},
+  {id:'daybreak-cooler',name:'Daybreak 30L Cooler',category:'essentials',price:189,sheet:2,position:'100% 0%',tag:'STAY A LITTLE LONGER',description:"A cream hard-sided cooler with a dark carry handle and front latches, ready to keep the day’s supplies together.",features:["Light-coloured hard shell","Dark carry handle","Front latch closures"],photo:"cream hard-sided cooler with a dark carrying handle"},
+  {id:'tide-deckboots',name:'Tide Deck Boots',category:'essentials',price:89,sheet:2,position:'0% 100%',tag:'FIND YOUR FOOTING',description:"Charcoal ankle boots with a low profile and pull tabs for an easy-to-pack addition to your boat kit.",features:["Ankle-height shape","Charcoal finish","Side pull tabs"],photo:"pair of charcoal ankle deck boots"},
+  {id:'compact-footpump',name:'Compact Foot Pump',category:'essentials',price:49,sheet:2,position:'50% 100%',tag:'READY TO GO',description:"A compact black bellows pump with a footplate and a flexible hose. Check the valve connection when matching it to your equipment.",features:["Bellows body","Foot-operated plate","Flexible hose"],photo:"black bellows foot pump with a flexible hose"},
+  {id:'coastal-anchor',name:'Coastal Stainless Anchor',category:'essentials',price:149,sheet:2,position:'100% 100%',tag:'STAY FOR A WHILE',description:"A polished anchor with a compact fluke profile. Select the size and type for your boat and anchoring conditions.",features:["Polished metal finish","Compact fluke shape","Choose size for your boat"],photo:"small polished stainless steel marine anchor"},
+  {id:'harbour-fender',name:'Harbour Dock Fender',category:'essentials',price:89,sheet:3,position:'0% 0%',tag:'A SOFTER LANDING',description:"A white cylindrical dock fender with navy ends and attachment points. Match the size and placement to the boat.",features:["White cylindrical body","Navy end caps","Attachment points at the ends"],photo:"white cylindrical boat fender with navy ends"},
+  {id:'coast-binoculars',name:'Coastline Marine Binoculars',category:'essentials',price:229,sheet:3,position:'50% 0%',tag:'LOOK A LITTLE FURTHER',description:"Navy binoculars with twin eyepieces, a central hinge and a rounded grip for keeping your next destination in view.",features:["Twin eyepiece design","Navy body","Central hinge and grip"],photo:"navy marine binoculars"},
+  {id:'deck-led-light',name:'Tidal Deck Light',category:'electronics',price:99,sheet:3,position:'100% 0%',tag:'LIGHT THE WAY',description:"A compact black deck light with a round lens and mounting bracket. Check the electrical connection for your setup.",features:["Black spotlight housing","Round lens","Mounting bracket"],photo:"black marine LED spotlight on a mounting bracket"},
+  {id:'battery-isolator',name:'Harbour Battery Switch',category:'essentials',price:59,sheet:3,position:'0% 100%',tag:'A THOUGHTFUL DETAIL',description:"A red rotary battery switch on a black mounting base. Match the connection and electrical ratings to your installation.",features:["Red rotary dial","Black mounting base","Visible mounting holes"],photo:"red rotary battery isolator switch on a black base"},
+  {id:'anchor-windlass',name:'Horizon Anchor Windlass',category:'essentials',price:799,sheet:3,position:'50% 100%',tag:'READY TO DROP ANCHOR',description:"A polished anchor windlass with a low-profile housing and dark mounting base. Check the fit with your deck and anchor system.",features:["Polished housing","Dark mounting base","Compact foredeck layout"],photo:"polished stainless anchor windlass on a black base"},
+  {id:'dock-cleats',name:'Dockside Cleat Pair',category:'essentials',price:79,sheet:3,position:'100% 100%',tag:'THE FINISHING TOUCH',description:"A pair of polished metal cleats with a low profile and visible mounting holes. Choose the size and mounting method for your boat.",features:["Pair of polished cleats","Low-profile shape","Visible mounting holes"],photo:"pair of polished stainless marine cleats"},
+  {id:'folding-grapnel-anchor',name:'Folding Grapnel Anchor',category:'essentials',price:59,sheet:4,position:'0% 0%',tag:'STAY A LITTLE LONGER',description:'A grey metal grapnel anchor with four folding prongs and a compact central shaft. Choose the size and style for your boat and anchoring conditions.',features:['Four-prong shape','Folding arm arrangement','Grey metal finish'],photo:'grey metal four-prong folding grapnel anchor'},
+  {id:'coastal-life-jacket',name:'Coastal Foam Life Jacket',category:'essentials',price:99,sheet:4,position:'50% 0%',tag:'BRING THE CREW',description:'A navy and orange foam life jacket with a front closure and adjustable straps. Choose the size and fit for the person wearing it.',features:['Navy and orange panels','Foam-panel shape','Adjustable straps and front closure'],photo:'navy and orange foam life jacket'},
+  {id:'deck-cleaning-brush',name:'Harbour Deck Brush',category:'essentials',price:35,sheet:4,position:'100% 0%',tag:'A FRESH START',description:'A blue and white deck brush with a compact rectangular head and a short metal handle for your boat-care kit.',features:['Blue and white brush head','Short metal handle','Rectangular bristle arrangement'],photo:'blue and white deck-cleaning brush with a short metal handle'},
+  {id:'boat-wash-kit',name:'Boat Wash Kit',category:'essentials',price:69,sheet:4,position:'0% 100%',tag:'KEEP IT SHIPSHAPE',description:'A boat-care set with a white bucket, blue brush and two bottles, keeping the cleaning essentials together in one place.',features:['White carry bucket','Blue cleaning brush','Two bottles'],photo:'white boat-wash bucket with a blue brush and two bottles'},
+  {id:'microfiber-cloth-pack',name:'Deck Care Cloth Pack',category:'essentials',price:24,sheet:4,position:'50% 100%',tag:'THE LITTLE DETAILS',description:'A stack of blue cleaning cloths with matching sponges for the finishing details of your boat-care routine.',features:['Three folded blue cloths','Matching cleaning sponges','Compact storage shape'],photo:'three folded blue cleaning cloths with sponges'},
+  {id:'inflatable-repair-kit',name:'Inflatable Repair Kit',category:'essentials',price:39,sheet:4,position:'100% 100%',tag:'KEEP YOUR KIT READY',description:'An orange repair box with patches, adhesive and small tools. Check that the patch and adhesive suit the material of your inflatable.',features:['Orange storage box','Repair patches and adhesive','Small hand tools'],photo:'open orange inflatable-repair box with patches adhesive and small tools'},
+  {id:'manual-bilge-pump',name:'Manual Bilge Pump',category:'essentials',price:49,sheet:5,position:'0% 0%',tag:'READY TO LEND A HAND',description:'A black and orange hand pump with a flexible hose and a simple upright handle, ready to organise with the rest of your boat kit.',features:['Black and orange pump body','Manual handle arrangement','Flexible hose'],photo:'black and orange manual bilge pump with a hose'},
+  {id:'waterproof-phone-pouch',name:'Shoreline Phone Pouch',category:'essentials',price:19,sheet:5,position:'50% 0%',tag:'KEEP IT CLOSE',description:'A clear phone pouch with a black rim and a navy neck cord, keeping your phone and lanyard together in a compact shape.',features:['Clear front panel','Black rim and closure','Navy neck cord'],photo:'clear phone pouch with a black rim and navy cord'},
+  {id:'marine-usb-charger',name:'Marine USB Charging Socket',category:'electronics',price:29,sheet:5,position:'100% 0%',tag:'A USEFUL CONNECTION',description:'A black round dual USB socket with a rubber cover. Match the connection and electrical ratings to your installation.',features:['Round black mounting body','Two USB openings','Rubber cover'],photo:'black round dual USB charging socket with a rubber cover'},
+  {id:'mushroom-anchor',name:'Mooring Mushroom Anchor',category:'essentials',price:45,sheet:5,position:'0% 100%',tag:'FIND YOUR PLACE',description:'A black mushroom-style anchor with a rounded base and curved shaft. Choose the weight and style for your boat and mooring conditions.',features:['Rounded mushroom base','Curved central shaft','Black finish'],photo:'black mushroom anchor with a curved shaft'},
+  {id:'dry-storage-box',name:'Dry Storage Box',category:'essentials',price:49,sheet:5,position:'50% 100%',tag:'ROOM FOR THE ESSENTIALS',description:'An orange hard-sided storage box with black latches, keeping small pieces of your boating kit together.',features:['Orange hard case','Black latch closures','Compact rectangular shape'],photo:'orange hard storage box with black latches'},
+  {id:'fishing-rod-holder',name:'Clamp-Mount Rod Holder',category:'essentials',price:59,sheet:5,position:'100% 100%',tag:'MAKE ROOM FOR THE DAY',description:'A polished metal rod holder with a cylindrical tube and clamp mount. Match the clamp and mounting position to your boat.',features:['Polished tubular holder','Clamp mounting bracket','Adjustable mounting arrangement'],photo:'polished stainless clamp-mount fishing rod holder'}
+]);
+// Edit this ordered list to choose the fourth-screen showcase. All IDs also live in PRODUCTS.
+// The showcase is independent of catalog search, filters, saved-only mode and sorting.
+const SHOWCASE_PRODUCT_IDS = Object.freeze([
+  'harbour-fender','coast-binoculars','deck-led-light',
+  'battery-isolator','anchor-windlass','dock-cleats'
 ]);
 const CATEGORIES = {all:'All gear',boats:'Boats & inflatables',electronics:'Marine electronics',essentials:'Parts & essentials'};
 const byId = new Map(PRODUCTS.map(product => [product.id,product]));
+const PHOTO_SHEET_CLASSES = Object.freeze({
+  2:'product-photo--second',3:'product-photo--third',
+  4:'product-photo--fourth',5:'product-photo--fifth'
+});
 const STORAGE_KEY = 'gaFreshMarineStoreV1';
 const $ = selector => document.querySelector(selector);
 const $$ = selector => [...document.querySelectorAll(selector)];
@@ -29,6 +57,8 @@ let cart = [];
 let saved = new Set();
 let detailProduct = null;
 let toastTimer;
+let toastFrame = 0;
+const productFlights = new Set();
 let productObserver;
 let revealFrame = 0;
 if ('IntersectionObserver' in window) {
@@ -63,12 +93,73 @@ function persist() {
   catch (_) { showToast('Changes are kept for this visit. Browser storage is unavailable.'); }
 }
 
-function showToast(message) {
+function thumbnailMarkup(product) {
+  return `<span class="product-photo${productPhotoClass(product)}" style="--photo-position:${product.position}" aria-hidden="true"></span>`;
+}
+
+function showToast(message,product) {
   const toast = $('#toast');
   clearTimeout(toastTimer);
-  toast.textContent = message;
-  toast.classList.add('visible');
-  toastTimer = setTimeout(() => toast.classList.remove('visible'),2600);
+  cancelAnimationFrame(toastFrame);
+  toast.replaceChildren();
+  if (product) {
+    const thumbnail = document.createElement('span');
+    thumbnail.className = 'toast-thumb';
+    thumbnail.setAttribute('aria-hidden','true');
+    thumbnail.innerHTML = thumbnailMarkup(product);
+    toast.append(thumbnail);
+  }
+  const copy = document.createElement('span');
+  copy.className = 'toast-message';
+  copy.textContent = message;
+  toast.append(copy);
+  // A manual popover keeps feedback visible above an open product or bag dialog.
+  if (typeof toast.showPopover === 'function') {
+    toast.setAttribute('popover','manual');
+    if (toast.matches(':popover-open')) toast.hidePopover();
+    toast.showPopover();
+  }
+  toastFrame = requestAnimationFrame(() => {
+    toastFrame = 0;
+    toast.classList.add('visible');
+  });
+  toastTimer = setTimeout(() => {
+    toast.classList.remove('visible');
+    toastTimer = setTimeout(() => {
+      if (typeof toast.hidePopover === 'function' && toast.matches(':popover-open')) toast.hidePopover();
+    },250);
+  },2600);
+}
+
+function animateProductThumbnail(product,source,target) {
+  if (reducedMotion() || !source || !target || typeof source.animate !== 'function') return;
+  const photo = source.closest('.product-card')?.querySelector('.product-photo');
+  if (!photo) return;
+  const start = photo.getBoundingClientRect();
+  const end = target.getBoundingClientRect();
+  if (start.bottom <= 0 || start.top >= innerHeight || start.right <= 0 || start.left >= innerWidth) return;
+  const flight = document.createElement('div');
+  flight.className = 'product-flight';
+  flight.setAttribute('aria-hidden','true');
+  flight.innerHTML = thumbnailMarkup(product);
+  const x = start.left + start.width / 2;
+  const y = start.top + start.height / 2;
+  flight.style.left = `${x - 28}px`;
+  flight.style.top = `${y - 28}px`;
+  document.body.append(flight);
+  if (typeof flight.showPopover === 'function') {
+    flight.setAttribute('popover','manual');
+    flight.showPopover();
+  }
+  const animation = flight.animate([
+    {transform:'translate(0,0) scale(1)',opacity:1},
+    {transform:`translate(${end.left + end.width / 2 - x}px,${end.top + end.height / 2 - y}px) scale(.35)`,opacity:0}
+  ],{duration:680,easing:'cubic-bezier(.2,.75,.25,1)',fill:'forwards'});
+  const cleanup = () => { animation.cancel();flight.remove();productFlights.delete(cleanup); };
+  productFlights.add(cleanup);
+  animation.finished.then(cleanup,cleanup);
+  // Bound transient overlays when several products are added quickly.
+  if (productFlights.size > 3) [...productFlights][0]();
 }
 
 function updateHeader() {
@@ -95,31 +186,43 @@ function filteredProducts() {
   return result;
 }
 
+function showcaseProducts() {
+  return [...new Set(SHOWCASE_PRODUCT_IDS)].map(id => byId.get(id)).filter(Boolean);
+}
+
+function productPhotoClass(product) {
+  const className = PHOTO_SHEET_CLASSES[product.sheet];
+  return className ? ` ${className}` : '';
+}
+
 function productMarkup(product) {
   const isSaved = saved.has(product.id);
   const name = escapeHTML(product.name);
   return `<article class="product-card" data-product-id="${product.id}">
-    <button class="product-media" type="button" data-product="${product.id}" aria-label="View ${name}"><span class="product-photo${product.sheet === 2 ? ' product-photo--second' : ''}" style="--photo-position:${product.position}" role="img" aria-label="${escapeHTML(product.photo)}"></span><span class="product-tag">${product.tag}</span><span class="quick-view">Take a closer look ${arrow}</span></button>
+    <button class="product-media" type="button" data-product="${product.id}" aria-label="View ${name}"><span class="product-photo${productPhotoClass(product)}" style="--photo-position:${product.position}" role="img" aria-label="${escapeHTML(product.photo)}"></span><span class="product-tag">${product.tag}</span><span class="quick-view">Take a closer look ${arrow}</span></button>
     <button class="save-button" type="button" data-save="${product.id}" aria-pressed="${isSaved}" aria-label="${isSaved ? 'Unsave' : 'Save'} ${name}">${heart}</button>
-    <div class="product-meta"><span>${CATEGORIES[product.category]}</span><span>CONCEPT / CAD</span></div>
+    <div class="product-meta"><span>${CATEGORIES[product.category]}</span><span>CAD</span></div>
     <h3><button class="product-name" type="button" data-product="${product.id}">${name}</button></h3>
     <div class="product-bottom"><span class="price">${money(product.price)}<small>CAD</small></span><button class="add-button" type="button" data-add="${product.id}" aria-label="Add ${name} to bag">Add to bag <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button></div>
   </article>`;
 }
 
-function renderCatalog(focusSavedId) {
+function renderCatalog(focusSavedId,focusRailId) {
   const visible = filteredProducts();
+  const showcase = showcaseProducts();
   productObserver?.disconnect();
-  $('#product-grid').innerHTML = visible.slice(0,6).map(productMarkup).join('');
-  $('#secondary-grid').innerHTML = visible.slice(6,12).map(productMarkup).join('');
-  $('#secondary-collection').hidden = visible.length <= 6;
-  $('#secondary-empty').hidden = visible.length > 6;
+  $('#product-grid').innerHTML = visible.map(productMarkup).join('');
+  $('#secondary-grid').innerHTML = showcase.map(productMarkup).join('');
+  $('#secondary-collection').hidden = !showcase.length;
+  $('#secondary-empty').hidden = !!showcase.length;
   $('#mid-banner').hidden = false;
   $('#product-grid').hidden = !visible.length;
   $('#empty-state').hidden = !!visible.length;
   $('#empty-message').textContent = state.savedOnly ? 'Save a product with the heart to keep your next good find here.' : 'Try a different search or clear your filters.';
   $('#catalog-title').textContent = state.savedOnly ? 'YOUR NEXT GOOD FINDS.' : state.category === 'boats' ? 'YOUR WAY OUT.' : state.category === 'electronics' ? 'FIND YOUR HEADING.' : state.category === 'essentials' ? 'BRING THE GOOD.' : 'GOOD TO GO.';
   $('#result-count').textContent = `${visible.length} ${state.savedOnly ? 'saved ' : ''}${visible.length === 1 ? 'item' : 'items'}`;
+  const allGearCount = $('.category-tabs [data-category="all"] > span');
+  if (allGearCount) allGearCount.textContent = String(PRODUCTS.length);
   const filterCount = Number(state.category !== 'all') + Number(state.maxPrice !== null);
   $('#filter-count').hidden = !filterCount;
   $('#filter-count').textContent = String(filterCount);
@@ -142,7 +245,8 @@ function renderCatalog(focusSavedId) {
   });
   requestAnimationFrame(() => { updateRailControls();scheduleCardReveal();window.storeScenes?.refresh(); });
   if (focusSavedId) {
-    const next = $(`[data-save="${focusSavedId}"]`);
+    const selector = `[data-save="${focusSavedId}"]`;
+    const next = document.getElementById(focusRailId)?.querySelector(selector) || $(selector);
     if (next) next.focus({preventScroll:true});
     else $('#wishlist-toggle').focus({preventScroll:true});
   }
@@ -179,13 +283,56 @@ function clearFilters() {
   renderCatalog();
 }
 
-function toggleSaved(id) {
+function toggleSaved(id,source = document.activeElement) {
   const product = byId.get(id);
   if (!product) return;
-  if (saved.has(id)) { saved.delete(id);showToast(`${product.name} removed from saved gear.`); }
-  else { saved.add(id);showToast(`${product.name} saved for later.`); }
+  const added = !saved.has(id);
+  if (added) saved.add(id);
+  else saved.delete(id);
+  // Keep the existing cards and their reveal state, focus and rail positions intact.
+  $$(`[data-save="${id}"]`).forEach(button => {
+    button.setAttribute('aria-pressed',String(added));
+    button.setAttribute('aria-label',`${added ? 'Unsave' : 'Save'} ${product.name}`);
+  });
+  if (state.savedOnly) reconcileSavedCatalog();
   persist();
-  renderCatalog(id);
+  updateHeader();
+  showToast(`${product.name} ${added ? 'saved for later' : 'removed from saved gear'}.`,product);
+  if (added) animateProductThumbnail(product,source,$('#wishlist-toggle'));
+}
+
+function reconcileSavedCatalog() {
+  const rail = $('#product-grid');
+  const left = rail.scrollLeft;
+  const focused = document.activeElement;
+  const focusedCard = focused?.closest('#product-grid .product-card');
+  const cards = new Map([...rail.children].map(card => [card.dataset.productId,card]));
+  const visible = filteredProducts();
+  const remaining = new Set(visible.map(product => product.id));
+  cards.forEach((card,id) => {
+    if (!remaining.has(id)) { productObserver?.unobserve(card);card.remove(); }
+  });
+  visible.forEach((product,index) => {
+    let card = cards.get(product.id);
+    if (!card) {
+      const fragment = document.createElement('template');
+      fragment.innerHTML = productMarkup(product);
+      card = fragment.content.firstElementChild;
+      card.classList.add('is-revealed');
+      card.style.setProperty('--reveal-opacity','1');
+      card.style.setProperty('--reveal-shift','0px');
+      card.dataset.revealProgress = '1';
+    }
+    if (rail.children[index] !== card) rail.insertBefore(card,rail.children[index] || null);
+  });
+  rail.hidden = !visible.length;
+  $('#empty-state').hidden = !!visible.length;
+  $('#result-count').textContent = `${visible.length} saved ${visible.length === 1 ? 'item' : 'items'}`;
+  rail.scrollLeft = left;
+  updateRailControls();
+  if (focusedCard && !focused.isConnected) {
+    (rail.querySelector('[data-save]') || $('#wishlist-toggle')).focus({preventScroll:true});
+  }
 }
 
 function showSaved(toggle) {
@@ -200,9 +347,10 @@ function openProduct(id) {
   const product = byId.get(id);
   if (!product) return;
   detailProduct = product;
-  $('#detail-photo').style.setProperty('--photo-position',product.position);
-  $('#detail-photo').classList.toggle('product-photo--second',product.sheet === 2);
-  $('#detail-photo').setAttribute('aria-label',product.photo);
+  const photo = $('#detail-photo');
+  photo.style.setProperty('--photo-position',product.position);
+  Object.entries(PHOTO_SHEET_CLASSES).forEach(([sheet,className]) => photo.classList.toggle(className,product.sheet === Number(sheet)));
+  photo.setAttribute('aria-label',product.photo);
   $('#detail-name').textContent = product.name;
   $('#detail-price').textContent = `${money(product.price)} CAD`;
   $('#detail-category').textContent = CATEGORIES[product.category];
@@ -212,7 +360,7 @@ function openProduct(id) {
   openDialog($('#product-dialog'));
 }
 
-function addToBag(id,quantity = 1) {
+function addToBag(id,quantity = 1,source = document.activeElement,feedback = true) {
   const product = byId.get(id);
   if (!product) return;
   const current = cart.find(line => line.id === id);
@@ -222,7 +370,11 @@ function addToBag(id,quantity = 1) {
   persist();
   updateHeader();
   renderCart();
-  showToast(`${product.name} added to your bag.`);
+  if (feedback) {
+    showToast(`${product.name} added to your bag.`,product);
+    animateProductThumbnail(product,source,$('#cart-toggle'));
+  }
+  return true;
 }
 
 function bagTotal() { return cart.reduce((total,line) => total + byId.get(line.id).price * line.quantity,0); }
@@ -230,7 +382,7 @@ function bagTotal() { return cart.reduce((total,line) => total + byId.get(line.i
 function cartLineMarkup(line) {
   const product = byId.get(line.id);
   const name = escapeHTML(product.name);
-  return `<article class="cart-line" data-cart-line="${line.id}"><div class="cart-line-photo"><div class="product-photo${product.sheet === 2 ? ' product-photo--second' : ''}" style="--photo-position:${product.position}" role="img" aria-label="${escapeHTML(product.photo)}"></div></div><div class="cart-line-info"><p>${CATEGORIES[product.category]}</p><h3>${name}</h3><strong class="cart-line-price">${money(product.price * line.quantity)}</strong><div class="cart-line-controls"><div class="quantity-control" role="group" aria-label="Quantity for ${name}"><button type="button" data-cart-step="-1" data-id="${line.id}" aria-label="Decrease quantity of ${name}"${line.quantity === 1 ? ' disabled' : ''}>−</button><span aria-live="polite">${line.quantity}</span><button type="button" data-cart-step="1" data-id="${line.id}" aria-label="Increase quantity of ${name}"${line.quantity === 99 ? ' disabled' : ''}>+</button></div><button class="remove-button" type="button" data-cart-remove="${line.id}" aria-label="Remove ${name} from bag">Remove</button></div></div></article>`;
+  return `<article class="cart-line" data-cart-line="${line.id}"><div class="cart-line-photo"><div class="product-photo${productPhotoClass(product)}" style="--photo-position:${product.position}" role="img" aria-label="${escapeHTML(product.photo)}"></div></div><div class="cart-line-info"><p>${CATEGORIES[product.category]}</p><h3>${name}</h3><strong class="cart-line-price">${money(product.price * line.quantity)}</strong><div class="cart-line-controls"><div class="quantity-control" role="group" aria-label="Quantity for ${name}"><button type="button" data-cart-step="-1" data-id="${line.id}" aria-label="Decrease quantity of ${name}"${line.quantity === 1 ? ' disabled' : ''}>−</button><span aria-live="polite">${line.quantity}</span><button type="button" data-cart-step="1" data-id="${line.id}" aria-label="Increase quantity of ${name}"${line.quantity === 99 ? ' disabled' : ''}>+</button></div><button class="remove-button" type="button" data-cart-remove="${line.id}" aria-label="Remove ${name} from bag">Remove</button></div></div></article>`;
 }
 
 function renderCart() {
@@ -352,7 +504,7 @@ $$('[data-rail]').forEach(button => button.addEventListener('click',() => {
   const rail = document.getElementById(button.dataset.rail);
   rail.scrollBy({left:Math.max(240,rail.clientWidth * .8) * Number(button.dataset.direction),behavior:reducedMotion() ? 'auto' : 'smooth'});
 }));
-$$('.product-rail').forEach(rail => rail.addEventListener('scroll',updateRailControls,{passive:true}));
+$$('.product-rail').forEach(rail => rail.addEventListener('scroll',() => { updateRailControls();scheduleCardReveal(); },{passive:true}));
 window.addEventListener('resize',updateRailControls,{passive:true});
 window.addEventListener('scroll',scheduleCardReveal,{passive:true});
 window.addEventListener('resize',scheduleCardReveal,{passive:true});
@@ -363,9 +515,9 @@ document.addEventListener('click',event => {
   const closeButton = event.target.closest('[data-close]');
   if (closeButton) { closeButton.closest('dialog')?.close();return; }
   const saveButton = event.target.closest('[data-save]');
-  if (saveButton) { toggleSaved(saveButton.dataset.save);return; }
+  if (saveButton) { toggleSaved(saveButton.dataset.save,saveButton);return; }
   const addButton = event.target.closest('[data-add]');
-  if (addButton) { addToBag(addButton.dataset.add);return; }
+  if (addButton) { addToBag(addButton.dataset.add,1,addButton);return; }
   const productButton = event.target.closest('[data-product]');
   if (productButton) { openProduct(productButton.dataset.product);return; }
   const stepButton = event.target.closest('[data-cart-step]');
@@ -382,7 +534,7 @@ $('#search-toggle').addEventListener('click',() => { scrollCatalog();$('#catalog
 $('#wishlist-toggle').addEventListener('click',() => showSaved(true));
 $('#footer-saved').addEventListener('click',() => showSaved(false));
 $('#menu-toggle').addEventListener('click',() => openDialog($('#menu-dialog')));
-$('#concept-info').addEventListener('click',() => openDialog($('#info-dialog')));
+$('#store-info').addEventListener('click',() => openDialog($('#info-dialog')));
 $('#cart-toggle').addEventListener('click',() => { renderCart();openDialog($('#cart-dialog')); });
 $('#filter-toggle').addEventListener('click',() => {
   $('#filter-category').value = state.category;
@@ -402,13 +554,16 @@ $('#detail-add').addEventListener('click',() => {
   if (!detailProduct) return;
   const input = $('#detail-quantity');
   if (!input.reportValidity()) return;
-  addToBag(detailProduct.id,boundedQuantity(input.value));
+  const product = detailProduct;
+  const added = addToBag(product.id,boundedQuantity(input.value),null,false);
+  if (!added) return;
   $('#product-dialog').close();
   openDialog($('#cart-dialog'));
+  showToast(`${product.name} added to your bag.`,product);
 });
 $('#checkout-button').addEventListener('click',() => {
   if (!cart.length) return;
-  $('#checkout-summary').innerHTML = cart.map(line => `<div class="checkout-line"><span>${escapeHTML(byId.get(line.id).name)} × ${line.quantity}</span><strong>${money(byId.get(line.id).price * line.quantity)}</strong></div>`).join('') + `<div class="checkout-line"><strong>Sample total · CAD</strong><strong>${money(bagTotal())}</strong></div>`;
+  $('#checkout-summary').innerHTML = cart.map(line => `<div class="checkout-line"><span>${escapeHTML(byId.get(line.id).name)} × ${line.quantity}</span><strong>${money(byId.get(line.id).price * line.quantity)}</strong></div>`).join('') + `<div class="checkout-line"><strong>Total · CAD</strong><strong>${money(bagTotal())}</strong></div>`;
   openDialog($('#checkout-dialog'));
 });
 $$('dialog').forEach(dialog => {

@@ -23,13 +23,34 @@
   let gestureUsed = false;
   let touch;
   let lastBackdropOpacity;
+  let nativeReturnUntil = 0;
+  let lastObservedScroll = scrollY;
+  let nativeScrollLock = null;
   const QUIET_GAP = 220;
   const surfaces = scenes.map((scene,index) => index === 0
     ? [...scene.querySelectorAll('.hero-copy,.hero-bottom')]
     : [...scene.children]);
   surfaces.flat().forEach(surface => surface.dataset.transitionSurface = '');
 
+  function returnZone() { return Math.min(180,Math.max(70,innerHeight * .16)); }
+
+  function lockNativeScroll() {
+    const root = document.documentElement;
+    nativeScrollLock = {overflowY:root.style.overflowY,gutter:root.style.scrollbarGutter};
+    // Preserve the scrollbar's space while stopping its already queued native momentum.
+    root.style.scrollbarGutter = 'stable';
+    root.style.overflowY = 'hidden';
+  }
+
+  function releaseNativeScroll() {
+    if (!nativeScrollLock) return;
+    document.documentElement.style.overflowY = nativeScrollLock.overflowY;
+    document.documentElement.style.scrollbarGutter = nativeScrollLock.gutter;
+    nativeScrollLock = null;
+  }
+
   function clearTransitionVisuals() {
+    releaseNativeScroll();
     document.body.classList.remove('scene-transitioning');
     delete document.body.dataset.sceneTransition;
     heroBackdrop.style.removeProperty('--hero-hold');
@@ -109,6 +130,7 @@
     cancelAnimationFrame(animationFrame);
     if (animationResolve) { animationResolve(false);animationResolve = null; }
     clearTransitionVisuals();
+    nativeReturnUntil = 0;
     activeTarget = index;
     const from = scrollY;
     const destination = anchors[index];
@@ -118,7 +140,10 @@
       ? [interval - 1,interval]
       : Math.abs(index - departure) === 1 ? [Math.min(index,departure),Math.max(index,departure)] : null;
     const heroPanel = pair !== null && pair[0] === 0 && pair[1] === 1;
-    const duration = motion.matches || options.instant ? 0 : heroPanel ? 1250 : 1100 + Math.max(0,Math.abs(index - departure) - 1) * 100;
+    const returningFromFree = !!options.fromFree && destination < from;
+    const duration = motion.matches || options.instant ? 0 : returningFromFree
+      ? Math.min(1450,Math.max(1100,Math.abs(destination - from) * 1.1))
+      : heroPanel ? 1250 : 1100 + Math.max(0,Math.abs(index - departure) - 1) * 100;
     if (!duration || Math.abs(destination - from) < 2) {
       animating = false;
       activeTarget = null;
@@ -127,6 +152,10 @@
       return Promise.resolve(true);
     }
     animating = true;
+    if (returningFromFree) {
+      lockNativeScroll();
+      window.scrollTo({left:scrollX,top:from,behavior:'instant'});
+    }
     document.body.classList.add('scene-transitioning');
     const paint = transitionVisuals(departure,index,Math.sign(destination - from),heroPanel,pair);
     paint(0);
@@ -134,8 +163,8 @@
       animationResolve = resolve;
       const started = performance.now();
       function tick(now) {
-        const progress = Math.min(1,(now - started) / duration);
-        const eased = .5 - Math.cos(Math.PI * progress) / 2;
+        const progress = Math.max(0,Math.min(1,(now - started) / duration));
+        const eased = returningFromFree ? Math.sin(Math.PI * progress / 2) : .5 - Math.cos(Math.PI * progress) / 2;
         window.scrollTo(0,Math.round(from + (destination - from) * eased));
         paint(eased);
         update();
@@ -180,8 +209,10 @@
     const quiet = now - lastWheel > QUIET_GAP;
 
     if (y > anchors[lastScene] + 4 && !animating) {
-      if (delta < 0 && y + delta < anchors[lastScene] - 4) {
-        event.preventDefault();gestureUsed = true;lastWheel = now;goTo(lastScene - 1);
+      nativeReturnUntil = delta < 0 ? now + 1000 : 0;
+      if (delta < 0 && (y <= anchors[lastScene] + returnZone() || y + delta <= anchors[lastScene] + returnZone())) {
+        event.preventDefault();gestureUsed = true;wheelTotal = 0;lastWheel = now;
+        goTo(lastScene - 1,{fromFree:true});
       }
       return;
     }
@@ -191,9 +222,10 @@
     }
 
     event.preventDefault();
+    if (animating) { lastWheel = now;gestureUsed = true;wheelTotal = 0;return; }
     if (quiet) { gestureUsed = false;wheelTotal = 0;wheelDirection = 0; }
     lastWheel = now;
-    if (animating || gestureUsed) return;
+    if (gestureUsed) return;
     const direction = Math.sign(delta);
     if (direction !== wheelDirection) wheelTotal = 0;
     wheelDirection = direction;
@@ -209,7 +241,7 @@
   window.addEventListener('touchstart',event => {
     if (event.touches.length !== 1 || ignore(event)) { touch = null;return; }
     const point = event.touches[0];
-    touch = {x:point.clientX,y:point.clientY,used:false};
+    touch = {x:point.clientX,y:point.clientY,startScroll:scrollY,used:false};
   },{passive:true});
   window.addEventListener('touchmove',event => {
     if (!touch || event.touches.length !== 1 || ignore(event)) return;
@@ -217,7 +249,15 @@
     const dy = touch.y - point.clientY;
     const dx = touch.x - point.clientX;
     if (Math.abs(dx) > Math.abs(dy) || Math.abs(dy) < 12) return;
-    if (scrollY > anchors[lastScene] + 4 && !animating) return;
+    if (scrollY > anchors[lastScene] + 4 && !animating) {
+      nativeReturnUntil = dy < 0 ? performance.now() + 1000 : 0;
+      if (dy < 0 && (scrollY <= anchors[lastScene] + returnZone() || touch.startScroll + dy <= anchors[lastScene] + returnZone())) {
+        if (event.cancelable) event.preventDefault();
+        touch.used = true;
+        goTo(lastScene - 1,{fromFree:true});
+      }
+      return;
+    }
     if (scrollY >= anchors[lastScene] - 4 && dy > 0 && !animating && !touch.used) return;
     if (event.cancelable) event.preventDefault();
     if (touch.used || animating || Math.abs(dy) < 45) return;
@@ -233,7 +273,15 @@
     const up = event.key === 'PageUp' || event.key === 'ArrowUp' || event.key === ' ' && event.shiftKey;
     if (event.key === 'Home' && !event.ctrlKey) { event.preventDefault();goTo(0);return; }
     if (!down && !up) return;
-    if (scrollY > anchors[lastScene] + 4 || scrollY >= anchors[lastScene] - 4 && down && !animating) return;
+    if (scrollY > anchors[lastScene] + 4) {
+      nativeReturnUntil = up ? performance.now() + 1000 : 0;
+      const step = event.key === 'ArrowUp' ? 40 : innerHeight;
+      if (up && (scrollY <= anchors[lastScene] + returnZone() || scrollY - step <= anchors[lastScene] + returnZone())) {
+        event.preventDefault();goTo(lastScene - 1,{fromFree:true});
+      }
+      return;
+    }
+    if (scrollY >= anchors[lastScene] - 4 && down && !animating) return;
     event.preventDefault();
     if (!animating) goTo(current + (down ? 1 : -1));
   });
@@ -256,16 +304,30 @@
   });
 
   window.addEventListener('scroll',() => {
+    const y = Math.max(0,scrollY);
+    const movingUp = y < lastObservedScroll - .5;
+    lastObservedScroll = y;
     if (!scrollFrame) scrollFrame = requestAnimationFrame(() => { scrollFrame = 0;update(); });
     clearTimeout(settleTimer);
+    // Native touch/trackpad momentum may cross the zone without another input event.
+    if (!animating && movingUp && performance.now() < nativeReturnUntil && y <= anchors[lastScene] + returnZone() && y > anchors[lastScene - 1] + 4 && !document.querySelector('dialog[open]')) {
+      gestureUsed = true;wheelTotal = 0;lastWheel = performance.now();
+      if (touch) touch.used = true;
+      goTo(lastScene - 1,{fromFree:true});
+      return;
+    }
     if (!animating && scrollY > 2 && scrollY < anchors[lastScene] - 4 && !document.querySelector('dialog[open]')) {
+      const version = navigationVersion;
       settleTimer = setTimeout(() => {
+        if (animating || version !== navigationVersion) return;
         const closest = anchors.reduce((best,value,index) => Math.abs(value - scrollY) < Math.abs(anchors[best] - scrollY) ? index : best,0);
         goTo(closest);
       },180);
     }
   },{passive:true});
   window.addEventListener('resize',() => {
+    nativeReturnUntil = 0;
+    lastObservedScroll = scrollY;
     const index = activeTarget === null ? current : activeTarget;
     const wasAnimating = activeTarget !== null;
     const version = navigationVersion;
@@ -281,7 +343,7 @@
   });
 
   function sceneIndex(target) {
-    const targets = [['#home','#scene-1'],['#collections','#scene-2'],['#catalog','#scene-3'],['#scene-4'],['#scene-5']];
+    const targets = [['#home','#scene-1'],['#collections','#scene-2'],['#catalog','#scene-3'],['#scene-4','#secondary-collection','#mid-banner'],['#scene-5']];
     const index = targets.findIndex(group => group.includes(target));
     return index < 0 ? null : index;
   }
