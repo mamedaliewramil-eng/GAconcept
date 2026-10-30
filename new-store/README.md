@@ -4,15 +4,16 @@ A new HTML/CSS/JavaScript implementation built from scratch, with Attitude as th
 
 Extract the downloadable ZIP and open its only HTML file, `index.html`, in a browser. Images, styles, both JavaScript files and the Archivo font are embedded; the demonstration store makes no external requests. The root `index.html`, this directory's `index.html` and `ga-checkpoint-new.html` are identical standalone builds and can each be downloaded separately.
 
-## Three scrolling stages
+## Four scrolling stages
 
 1. The compact header and full-cover photographic carousel form the first screen. Three images crossfade every 15 seconds, with manual controls and pause.
-2. A complete second screen contains the ticker, search/filter controls, first six products and a shorter full-width photographic banner. A vertical wheel gesture advances to this screen as a whole. The next gesture advances to stage three. Trackpad momentum is consumed until the gesture ends, preventing an accidental double advance.
-3. The second product row and all remaining collections, stories and footer use normal, unrestricted page scrolling. Scrolling back to the top of this area returns to the section transitions.
+2. The full second screen is the category chooser, “PICK YOUR PURSUIT.”: boats, electronics and essentials. The three large tiles sit in a row on desktop and compact stacked rows on mobile. Selecting one filters the products and advances to block three.
+3. The third screen contains the ticker, search/filter controls, first six products and a shorter full-width photographic banner.
+4. The fourth block begins with the second product row and continues into stories and the footer. After arriving at this block, subsequent scrolling is native and unrestricted. Scrolling back above it returns to the section transitions.
 
-The second screen rises as one opaque white panel over the introductory photo. Its ticker, products and smaller banner travel together over 1.25 seconds with a sine easing curve and a soft shadow along the leading edge. The photo stays under the fixed header, fills the screen as the announcement scrolls away, and fades behind the incoming panel. Reversing midway preserves the panel's exact position. Other adjacent sections transition over approximately one second. Finishing, cancelling, resizing or enabling reduced motion clears every temporary offset, so the third section returns to native scrolling without retained transforms.
+The category screen rises as one opaque white panel over the introductory photo in 1.25 seconds, using a sine easing curve and a soft shadow along its leading edge. The photo stays under the fixed header, fills the screen as the announcement scrolls away, and fades behind the incoming categories. Other adjacent blocks transition in 1.1 seconds. Every adjacent pair uses absolute scroll progress so reversing midway preserves the current offsets. Trackpad momentum is consumed until a gesture ends. Finishing, cancelling, resizing or enabling reduced motion clears temporary effects, so scrolling after block four remains unrestricted.
 
-The first screen's photos and dark overlay also fade out together as the page moves to the second screen, revealing the normal white page background. Their opacity stays at zero throughout the second and third stages and is restored progressively when returning to the first screen. This background state is separate from the temporary foreground slide effects.
+The first screen's photos and dark overlay fade out together as the page moves to the category screen, revealing the normal white page background. Their opacity stays at zero throughout blocks two, three and four and is restored progressively when returning to the first screen. This background state is separate from the temporary foreground slide effects.
 
 Touch swipes, Page Up/Down, arrow keys and section navigation are supported. Form inputs, zoom gestures, horizontal product scrolling and open dialogs retain their own interactions. On extremely short windows, the compact product pane can scroll internally to keep controls reachable. The banner and scene anchors remain stable when filters change.
 

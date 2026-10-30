@@ -1,12 +1,13 @@
 'use strict';
 
-// The first two scenes advance one section per gesture; the rest of the page is native.
+// Advance through hero, categories and featured gear; scroll freely after entering scene four.
 (() => {
-  const scenes = [1,2,3].map(number => document.getElementById(`scene-${number}`));
+  const scenes = [...document.querySelectorAll('main > .scroll-scene')];
+  const lastScene = scenes.length - 1;
   const header = document.querySelector('.site-header');
   const heroBackdrop = document.getElementById('hero-carousel');
   const motion = matchMedia('(prefers-reduced-motion: reduce)');
-  let anchors = [0,0,0];
+  let anchors = scenes.map(() => 0);
   let current = 0;
   let animating = false;
   let animationFrame = 0;
@@ -23,11 +24,9 @@
   let touch;
   let lastBackdropOpacity;
   const QUIET_GAP = 220;
-  const surfaces = [
-    [...scenes[0].querySelectorAll('.hero-copy,.hero-bottom')],
-    [...scenes[1].children],
-    [...scenes[2].children]
-  ];
+  const surfaces = scenes.map((scene,index) => index === 0
+    ? [...scene.querySelectorAll('.hero-copy,.hero-bottom')]
+    : [...scene.children]);
   surfaces.flat().forEach(surface => surface.dataset.transitionSurface = '');
 
   function clearTransitionVisuals() {
@@ -43,27 +42,30 @@
     });
   }
 
-  function transitionVisuals(fromIndex,toIndex,direction,heroPanel) {
-    if (fromIndex === toIndex && !heroPanel) return () => {};
-    const outgoing = scenes[heroPanel ? direction > 0 ? 0 : 1 : fromIndex];
-    const incoming = scenes[heroPanel ? direction > 0 ? 1 : 0 : toIndex];
+  function transitionVisuals(fromIndex,toIndex,direction,heroPanel,pair) {
+    if (fromIndex === toIndex && !pair) return () => {};
+    const outgoing = scenes[pair ? pair[direction > 0 ? 0 : 1] : fromIndex];
+    const incoming = scenes[pair ? pair[direction > 0 ? 1 : 0] : toIndex];
     const travel = Math.min(110,Math.max(45,innerHeight * .1));
     const announcementHeight = document.querySelector('.announcement').getBoundingClientRect().height;
     if (heroPanel) document.body.dataset.sceneTransition = 'hero-panel';
     outgoing.dataset.transitioning = 'true';
     incoming.dataset.transitioning = 'true';
     return progress => {
-      if (heroPanel) {
-        // Use the actual scroll position so reversing midway preserves every offset.
-        const reveal = Math.max(0,Math.min(1,scrollY / anchors[1]));
-        scenes[0].style.setProperty('--scene-shift',`${(-travel * reveal).toFixed(2)}px`);
-        scenes[0].style.setProperty('--scene-opacity',String(1 - .18 * reveal));
-        scenes[1].style.setProperty('--scene-shift',`${(travel * (1 - reveal)).toFixed(2)}px`);
-        scenes[1].style.setProperty('--scene-opacity','1');
-        // Hold and extend the photo as the thin announcement strip scrolls away.
-        heroBackdrop.style.setProperty('--hero-hold',`${Math.max(0,scrollY - announcementHeight)}px`);
-        heroBackdrop.style.setProperty('--hero-fill',`${Math.min(scrollY,announcementHeight)}px`);
-        scenes[1].style.setProperty('--panel-shadow-opacity',(Math.sin(Math.PI * reveal) * .16).toFixed(4));
+      if (pair) {
+        // Use absolute scroll progress for every adjacent pair, including mid-flight reversals.
+        const [lower,upper] = pair;
+        const reveal = Math.max(0,Math.min(1,(scrollY - anchors[lower]) / (anchors[upper] - anchors[lower])));
+        scenes[lower].style.setProperty('--scene-shift',`${(-travel * reveal).toFixed(2)}px`);
+        scenes[lower].style.setProperty('--scene-opacity',String(1 - .18 * reveal));
+        scenes[upper].style.setProperty('--scene-shift',`${(travel * (1 - reveal)).toFixed(2)}px`);
+        scenes[upper].style.setProperty('--scene-opacity',String(heroPanel ? 1 : .76 + .24 * reveal));
+        if (heroPanel) {
+          // Hold and extend the photo as the thin announcement strip scrolls away.
+          heroBackdrop.style.setProperty('--hero-hold',`${Math.max(0,scrollY - announcementHeight)}px`);
+          heroBackdrop.style.setProperty('--hero-fill',`${Math.min(scrollY,announcementHeight)}px`);
+          scenes[1].style.setProperty('--panel-shadow-opacity',(Math.sin(Math.PI * reveal) * .16).toFixed(4));
+        }
         return;
       }
       outgoing.style.setProperty('--scene-shift',`${(-direction * travel * progress).toFixed(2)}px`);
@@ -85,7 +87,10 @@
       heroBackdrop.style.setProperty('--hero-backdrop-opacity',backdropOpacity);
       lastBackdropOpacity = backdropOpacity;
     }
-    current = y < anchors[1] / 2 ? 0 : y < (anchors[1] + anchors[2]) / 2 ? 1 : 2;
+    current = 0;
+    for (let index = 1;index < anchors.length;index += 1) {
+      if (y >= (anchors[index - 1] + anchors[index]) / 2) current = index;
+    }
     document.body.dataset.scene = String(current + 1);
     scenes.forEach((scene,index) => scene.dataset.active = String(index === current));
     document.querySelectorAll('.scene-navigation [data-scene-go]').forEach(button => {
@@ -97,7 +102,7 @@
   function refresh() { measure();update(); }
 
   function goTo(index,options = {}) {
-    index = Math.max(0,Math.min(2,Number(index) || 0));
+    index = Math.max(0,Math.min(lastScene,Number(index) || 0));
     navigationVersion += 1;
     measure();
     clearTimeout(settleTimer);
@@ -108,8 +113,12 @@
     const from = scrollY;
     const destination = anchors[index];
     const departure = current;
-    const heroPanel = index <= 1 && from <= anchors[1] + 2 && Math.min(from,destination) < anchors[1] && Math.max(from,destination) > 0;
-    const duration = motion.matches || options.instant ? 0 : heroPanel ? 1250 : 900 + Math.min(2,Math.abs(index - departure)) * 100;
+    const interval = anchors.findIndex((anchor,number) => number > 0 && from > anchors[number - 1] + .5 && from < anchor - .5);
+    const pair = interval > 0 && (index === interval || index === interval - 1)
+      ? [interval - 1,interval]
+      : Math.abs(index - departure) === 1 ? [Math.min(index,departure),Math.max(index,departure)] : null;
+    const heroPanel = pair !== null && pair[0] === 0 && pair[1] === 1;
+    const duration = motion.matches || options.instant ? 0 : heroPanel ? 1250 : 1100 + Math.max(0,Math.abs(index - departure) - 1) * 100;
     if (!duration || Math.abs(destination - from) < 2) {
       animating = false;
       activeTarget = null;
@@ -119,14 +128,14 @@
     }
     animating = true;
     document.body.classList.add('scene-transitioning');
-    const paint = transitionVisuals(departure,index,Math.sign(destination - from),heroPanel);
+    const paint = transitionVisuals(departure,index,Math.sign(destination - from),heroPanel,pair);
     paint(0);
     return new Promise(resolve => {
       animationResolve = resolve;
       const started = performance.now();
       function tick(now) {
         const progress = Math.min(1,(now - started) / duration);
-        const eased = heroPanel ? .5 - Math.cos(Math.PI * progress) / 2 : progress ** 3 * (progress * (progress * 6 - 15) + 10);
+        const eased = .5 - Math.cos(Math.PI * progress) / 2;
         window.scrollTo(0,Math.round(from + (destination - from) * eased));
         paint(eased);
         update();
@@ -170,13 +179,13 @@
     const now = performance.now();
     const quiet = now - lastWheel > QUIET_GAP;
 
-    if (y > anchors[2] + 4 && !animating) {
-      if (delta < 0 && y + delta < anchors[2] - 4) {
-        event.preventDefault();gestureUsed = true;lastWheel = now;goTo(1);
+    if (y > anchors[lastScene] + 4 && !animating) {
+      if (delta < 0 && y + delta < anchors[lastScene] - 4) {
+        event.preventDefault();gestureUsed = true;lastWheel = now;goTo(lastScene - 1);
       }
       return;
     }
-    if (y >= anchors[2] - 4 && delta > 0 && !animating && (quiet || !gestureUsed)) {
+    if (y >= anchors[lastScene] - 4 && delta > 0 && !animating && (quiet || !gestureUsed)) {
       gestureUsed = false;
       return;
     }
@@ -192,7 +201,7 @@
     if (Math.abs(wheelTotal) < 24) return;
     gestureUsed = true;
     wheelTotal = 0;
-    goTo(Math.max(0,Math.min(2,current + direction)));
+    goTo(Math.max(0,Math.min(lastScene,current + direction)));
   }
 
   window.addEventListener('wheel',onWheel,{passive:false});
@@ -208,8 +217,8 @@
     const dy = touch.y - point.clientY;
     const dx = touch.x - point.clientX;
     if (Math.abs(dx) > Math.abs(dy) || Math.abs(dy) < 12) return;
-    if (scrollY > anchors[2] + 4 && !animating) return;
-    if (scrollY >= anchors[2] - 4 && dy > 0 && !animating && !touch.used) return;
+    if (scrollY > anchors[lastScene] + 4 && !animating) return;
+    if (scrollY >= anchors[lastScene] - 4 && dy > 0 && !animating && !touch.used) return;
     if (event.cancelable) event.preventDefault();
     if (touch.used || animating || Math.abs(dy) < 45) return;
     touch.used = true;
@@ -224,7 +233,7 @@
     const up = event.key === 'PageUp' || event.key === 'ArrowUp' || event.key === ' ' && event.shiftKey;
     if (event.key === 'Home' && !event.ctrlKey) { event.preventDefault();goTo(0);return; }
     if (!down && !up) return;
-    if (scrollY > anchors[2] + 4 || scrollY >= anchors[2] - 4 && down && !animating) return;
+    if (scrollY > anchors[lastScene] + 4 || scrollY >= anchors[lastScene] - 4 && down && !animating) return;
     event.preventDefault();
     if (!animating) goTo(current + (down ? 1 : -1));
   });
@@ -235,7 +244,7 @@
     const link = event.target.closest('a[href^="#"]');
     if (!link || link.closest('dialog')) return;
     const target = link.getAttribute('href');
-    const index = ['#home','#scene-1'].includes(target) ? 0 : ['#catalog','#scene-2'].includes(target) ? 1 : target === '#scene-3' ? 2 : null;
+    const index = sceneIndex(target);
     if (index === null) return;
     event.preventDefault();
     goTo(index).then(() => {
@@ -249,7 +258,7 @@
   window.addEventListener('scroll',() => {
     if (!scrollFrame) scrollFrame = requestAnimationFrame(() => { scrollFrame = 0;update(); });
     clearTimeout(settleTimer);
-    if (!animating && scrollY > 2 && scrollY < anchors[2] - 4 && !document.querySelector('dialog[open]')) {
+    if (!animating && scrollY > 2 && scrollY < anchors[lastScene] - 4 && !document.querySelector('dialog[open]')) {
       settleTimer = setTimeout(() => {
         const closest = anchors.reduce((best,value,index) => Math.abs(value - scrollY) < Math.abs(anchors[best] - scrollY) ? index : best,0);
         goTo(closest);
@@ -263,7 +272,7 @@
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
       refresh();
-      if ((wasAnimating || index < 2) && version === navigationVersion) goTo(index,{instant:true});
+      if ((wasAnimating || index < lastScene) && version === navigationVersion) goTo(index,{instant:true});
     },150);
   },{passive:true});
   window.addEventListener('load',refresh,{once:true});
@@ -271,8 +280,14 @@
     if (event.matches && activeTarget !== null) goTo(activeTarget,{instant:true});
   });
 
+  function sceneIndex(target) {
+    const targets = [['#home','#scene-1'],['#collections','#scene-2'],['#catalog','#scene-3'],['#scene-4']];
+    const index = targets.findIndex(group => group.includes(target));
+    return index < 0 ? null : index;
+  }
+
   window.storeScenes = {goTo,refresh,get current() {return current;},get anchors() {return [...anchors];},get transitioning() {return animating;}};
   refresh();
-  if (location.hash === '#catalog' || location.hash === '#scene-2') goTo(1,{instant:true});
-  else if (location.hash === '#scene-3') goTo(2,{instant:true});
+  const initialScene = sceneIndex(location.hash);
+  if (initialScene !== null) goTo(initialScene,{instant:true});
 })();

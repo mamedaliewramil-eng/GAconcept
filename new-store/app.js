@@ -149,7 +149,7 @@ function renderCatalog(focusSavedId) {
 
 function reducedMotion() { return matchMedia('(prefers-reduced-motion: reduce)').matches; }
 function scrollCatalog() {
-  if (window.storeScenes) window.storeScenes.goTo(1);
+  if (window.storeScenes) window.storeScenes.goTo(2);
   else $('#catalog').scrollIntoView({behavior:reducedMotion() ? 'auto' : 'smooth',block:'start'});
 }
 function syncOverlay() { document.body.classList.toggle('overlay-open',!!$('dialog[open]')); }
