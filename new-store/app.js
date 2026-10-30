@@ -30,10 +30,11 @@ let saved = new Set();
 let detailProduct = null;
 let toastTimer;
 let productObserver;
+let revealFrame = 0;
 if ('IntersectionObserver' in window) {
-  productObserver = new IntersectionObserver(entries => entries.forEach(entry => {
-    if (entry.isIntersecting) { entry.target.classList.add('is-revealed');productObserver.unobserve(entry.target); }
-  }),{threshold:0.08,rootMargin:'0px 0px -18px 0px'});
+  productObserver = new IntersectionObserver(entries => {
+    if (entries.some(entry => entry.isIntersecting)) scheduleCardReveal();
+  },{threshold:0.01,rootMargin:'0px 0px 50px 0px'});
 }
 
 function boundedQuantity(value) {
@@ -134,10 +135,11 @@ function renderCatalog(focusSavedId) {
   updateHeader();
   $$('.product-card').forEach((card,index) => {
     card.style.setProperty('--reveal-delay',`${(index % 6) * 65}ms`);
+    card.dataset.revealIndex = String(index % 6);
     if (productObserver && !reducedMotion()) productObserver.observe(card);
-    else card.classList.add('is-revealed');
+    else { card.classList.add('is-revealed');card.style.setProperty('--reveal-opacity','1');card.style.setProperty('--reveal-shift','0px'); }
   });
-  requestAnimationFrame(updateRailControls);
+  requestAnimationFrame(() => { updateRailControls();scheduleCardReveal(); });
   if (focusSavedId) {
     const next = $(`[data-save="${focusSavedId}"]`);
     if (next) next.focus({preventScroll:true});
@@ -262,6 +264,35 @@ function updateRailControls() {
   });
 }
 
+function scheduleCardReveal() {
+  if (!revealFrame) revealFrame = requestAnimationFrame(updateCardReveal);
+}
+function updateCardReveal() {
+  revealFrame = 0;
+  const viewport = window.innerHeight;
+  $$('.product-rail').forEach(rail => {
+    if (rail.closest('[hidden]')) return;
+    const rect = rail.getBoundingClientRect();
+    const travel = Math.max(150,viewport * .27);
+    const railProgress = Math.max(0,Math.min(1,(viewport + 35 - rect.top) / travel));
+    rail.querySelectorAll('.product-card').forEach(card => {
+      if (card.classList.contains('is-revealed')) return;
+      const stagger = Math.min(.2,Number(card.dataset.revealIndex || 0) * .035);
+      const next = reducedMotion() ? 1 : Math.max(0,Math.min(1,(railProgress - stagger) / (1 - stagger)));
+      const progress = Math.max(Number(card.dataset.revealProgress || 0),next);
+      card.dataset.revealProgress = String(progress);
+      card.style.setProperty('--reveal-opacity',String(progress));
+      card.style.setProperty('--reveal-shift',`${Math.round((1 - progress) * 110)}px`);
+      if (progress >= .995) {
+        card.style.setProperty('--reveal-opacity','1');
+        card.style.setProperty('--reveal-shift','0px');
+        card.classList.add('is-revealed');
+        productObserver?.unobserve(card);
+      }
+    });
+  });
+}
+
 // The full-bleed carousel changes images every fifteen seconds while playing.
 const heroSlides = $$('#hero-slides .hero-slide');
 let activeHeroSlide = 0;
@@ -305,6 +336,8 @@ $$('[data-rail]').forEach(button => button.addEventListener('click',() => {
 }));
 $$('.product-rail').forEach(rail => rail.addEventListener('scroll',updateRailControls,{passive:true}));
 window.addEventListener('resize',updateRailControls,{passive:true});
+window.addEventListener('scroll',scheduleCardReveal,{passive:true});
+window.addEventListener('resize',scheduleCardReveal,{passive:true});
 
 document.addEventListener('click',event => {
   const categoryButton = event.target.closest('[data-category]');

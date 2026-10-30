@@ -98,6 +98,22 @@ svg{stroke-width:1.35;stroke-linecap:round;stroke-linejoin:round}
 .product-card .price{display:block;min-height:18px}
 @media(max-width:650px){.product-rail .add-button{min-height:39px;font-size:10px;padding-inline:14px}.button{min-height:45px}.product-rail .save-button{width:34px;height:34px;top:8px;right:8px}.product-rail .save-button svg{width:17px;height:17px}}
 
+/* The collection rises from underneath the pinned, edge-to-edge hero. */
+.hero.hero-carousel{position:sticky;top:94px;z-index:0}
+main>.ticker,main>section:not(.hero){position:relative;z-index:2}
+main>.section{background:var(--paper)}
+.product-rail .product-card,.product-rail .product-card.is-revealed{opacity:var(--reveal-opacity,0);transform:translate3d(0,var(--reveal-shift,110px),0);transition:opacity .18s ease-out,transform .24s ease-out;transition-delay:0s;will-change:opacity,transform}
+.product-rail .product-card.is-revealed{--reveal-opacity:1;--reveal-shift:0px;will-change:auto}
+.product-rail .product-card:focus-within{opacity:1;transform:none;transition:none}
+@media(max-width:1100px){.hero.hero-carousel{top:86px}}
+@media(max-width:650px){.hero.hero-carousel{top:80px}}
+@media(prefers-reduced-motion:reduce){.hero.hero-carousel{position:relative;top:auto}.product-rail .product-card,.product-rail .product-card.is-revealed{opacity:1;transform:none;transition:none;will-change:auto}}
+/* Opaque full-width section backgrounds prevent the pinned photo leaking at the edges. */
+main>.section{width:100%;max-width:none;margin-inline:0;padding-inline:36px}
+main>.section.catalog,main>.section.secondary-collection{width:100%;margin-inline:0;padding-inline:14px}
+@media(max-width:1100px){main>.section{padding-inline:25px}main>.section.catalog,main>.section.secondary-collection{padding-inline:14px}}
+@media(max-width:650px){main>.section{padding-inline:18px}main>.section.catalog,main>.section.secondary-collection{padding-inline:10px}}
+
 </style>
 </head>
 <body>
@@ -214,10 +230,11 @@ let saved = new Set();
 let detailProduct = null;
 let toastTimer;
 let productObserver;
+let revealFrame = 0;
 if ('IntersectionObserver' in window) {
-  productObserver = new IntersectionObserver(entries => entries.forEach(entry => {
-    if (entry.isIntersecting) { entry.target.classList.add('is-revealed');productObserver.unobserve(entry.target); }
-  }),{threshold:0.08,rootMargin:'0px 0px -18px 0px'});
+  productObserver = new IntersectionObserver(entries => {
+    if (entries.some(entry => entry.isIntersecting)) scheduleCardReveal();
+  },{threshold:0.01,rootMargin:'0px 0px 50px 0px'});
 }
 
 function boundedQuantity(value) {
@@ -318,10 +335,11 @@ function renderCatalog(focusSavedId) {
   updateHeader();
   $$('.product-card').forEach((card,index) => {
     card.style.setProperty('--reveal-delay',`${(index % 6) * 65}ms`);
+    card.dataset.revealIndex = String(index % 6);
     if (productObserver && !reducedMotion()) productObserver.observe(card);
-    else card.classList.add('is-revealed');
+    else { card.classList.add('is-revealed');card.style.setProperty('--reveal-opacity','1');card.style.setProperty('--reveal-shift','0px'); }
   });
-  requestAnimationFrame(updateRailControls);
+  requestAnimationFrame(() => { updateRailControls();scheduleCardReveal(); });
   if (focusSavedId) {
     const next = $(`[data-save="${focusSavedId}"]`);
     if (next) next.focus({preventScroll:true});
@@ -446,6 +464,35 @@ function updateRailControls() {
   });
 }
 
+function scheduleCardReveal() {
+  if (!revealFrame) revealFrame = requestAnimationFrame(updateCardReveal);
+}
+function updateCardReveal() {
+  revealFrame = 0;
+  const viewport = window.innerHeight;
+  $$('.product-rail').forEach(rail => {
+    if (rail.closest('[hidden]')) return;
+    const rect = rail.getBoundingClientRect();
+    const travel = Math.max(150,viewport * .27);
+    const railProgress = Math.max(0,Math.min(1,(viewport + 35 - rect.top) / travel));
+    rail.querySelectorAll('.product-card').forEach(card => {
+      if (card.classList.contains('is-revealed')) return;
+      const stagger = Math.min(.2,Number(card.dataset.revealIndex || 0) * .035);
+      const next = reducedMotion() ? 1 : Math.max(0,Math.min(1,(railProgress - stagger) / (1 - stagger)));
+      const progress = Math.max(Number(card.dataset.revealProgress || 0),next);
+      card.dataset.revealProgress = String(progress);
+      card.style.setProperty('--reveal-opacity',String(progress));
+      card.style.setProperty('--reveal-shift',`${Math.round((1 - progress) * 110)}px`);
+      if (progress >= .995) {
+        card.style.setProperty('--reveal-opacity','1');
+        card.style.setProperty('--reveal-shift','0px');
+        card.classList.add('is-revealed');
+        productObserver?.unobserve(card);
+      }
+    });
+  });
+}
+
 // The full-bleed carousel changes images every fifteen seconds while playing.
 const heroSlides = $$('#hero-slides .hero-slide');
 let activeHeroSlide = 0;
@@ -489,6 +536,8 @@ $$('[data-rail]').forEach(button => button.addEventListener('click',() => {
 }));
 $$('.product-rail').forEach(rail => rail.addEventListener('scroll',updateRailControls,{passive:true}));
 window.addEventListener('resize',updateRailControls,{passive:true});
+window.addEventListener('scroll',scheduleCardReveal,{passive:true});
+window.addEventListener('resize',scheduleCardReveal,{passive:true});
 
 document.addEventListener('click',event => {
   const categoryButton = event.target.closest('[data-category]');

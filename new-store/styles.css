@@ -88,3 +88,19 @@ svg{stroke-width:1.35;stroke-linecap:round;stroke-linejoin:round}
 .hero-pause{border:1px solid #ffffff75;background:transparent;border-radius:0}.hero-pause:hover{border-color:#fff;background:#fff;color:var(--ink)}
 .product-card .price{display:block;min-height:18px}
 @media(max-width:650px){.product-rail .add-button{min-height:39px;font-size:10px;padding-inline:14px}.button{min-height:45px}.product-rail .save-button{width:34px;height:34px;top:8px;right:8px}.product-rail .save-button svg{width:17px;height:17px}}
+
+/* The collection rises from underneath the pinned, edge-to-edge hero. */
+.hero.hero-carousel{position:sticky;top:94px;z-index:0}
+main>.ticker,main>section:not(.hero){position:relative;z-index:2}
+main>.section{background:var(--paper)}
+.product-rail .product-card,.product-rail .product-card.is-revealed{opacity:var(--reveal-opacity,0);transform:translate3d(0,var(--reveal-shift,110px),0);transition:opacity .18s ease-out,transform .24s ease-out;transition-delay:0s;will-change:opacity,transform}
+.product-rail .product-card.is-revealed{--reveal-opacity:1;--reveal-shift:0px;will-change:auto}
+.product-rail .product-card:focus-within{opacity:1;transform:none;transition:none}
+@media(max-width:1100px){.hero.hero-carousel{top:86px}}
+@media(max-width:650px){.hero.hero-carousel{top:80px}}
+@media(prefers-reduced-motion:reduce){.hero.hero-carousel{position:relative;top:auto}.product-rail .product-card,.product-rail .product-card.is-revealed{opacity:1;transform:none;transition:none;will-change:auto}}
+/* Opaque full-width section backgrounds prevent the pinned photo leaking at the edges. */
+main>.section{width:100%;max-width:none;margin-inline:0;padding-inline:36px}
+main>.section.catalog,main>.section.secondary-collection{width:100%;margin-inline:0;padding-inline:14px}
+@media(max-width:1100px){main>.section{padding-inline:25px}main>.section.catalog,main>.section.secondary-collection{padding-inline:14px}}
+@media(max-width:650px){main>.section{padding-inline:18px}main>.section.catalog,main>.section.secondary-collection{padding-inline:10px}}
