@@ -1,19 +1,23 @@
-# GA Checkpoint — completely new storefront
+# GA Checkpoint — independent marine storefront
 
-This is a new HTML/CSS/JavaScript implementation built from scratch, with Attitude as a visual direction. It does not reuse the earlier GA HTML, catalog data, scripts, layout, or local-storage keys.
+A new HTML/CSS/JavaScript implementation built from scratch, with Attitude as the initial visual direction and GA Checkpoint-inspired blue, red, white and graphite branding. The earlier GA HTML, catalog data and scripts are not reused.
 
-Open `ga-checkpoint-new.html` from the downloadable ZIP in a browser. Images, styles, JavaScript and the Archivo font are embedded; the page requires no external services to render or use the demonstration catalog.
+Open `ga-checkpoint-new.html` from the downloadable ZIP in a browser. Images, styles, both JavaScript files and the Archivo font are embedded; the demonstration store makes no external requests.
 
-The concept collection contains twelve original sample products. Names, specifications, prices and generated product photography are illustrative and do not represent live GA Checkpoint inventory or an offer for sale. The bag review explicitly places no order and collects no payment. Saved products and the demonstration bag are stored only in this browser.
+## Three scrolling stages
 
-Layout: an edge-to-edge hero with three full-cover images, smooth crossfades every 15 seconds, manual slide controls and pause; a nearly edge-to-edge six-product row; a shorter full-width photographic banner; and a second six-product row. The hero stays behind the page as the next section rises over its bottom edge. Cards move up and fade in progressively with downward scrolling, with a slight stagger. Smaller screens keep the product rows horizontally scrollable. Reduced motion disables the pinning and card motion. The carousel pauses when the page is hidden and starts paused for reduced-motion preferences.
+1. The compact header and full-cover photographic carousel form the first screen. Three images crossfade every 15 seconds, with manual controls and pause.
+2. A complete second screen contains the ticker, search/filter controls, first six products and a shorter full-width photographic banner. A vertical wheel gesture advances to this screen as a whole. The next gesture advances to stage three. Trackpad momentum is consumed until the gesture ends, preventing an accidental double advance.
+3. The second product row and all remaining collections, stories and footer use normal, unrestricted page scrolling. Scrolling back to the top of this area returns to the section transitions.
 
-The navigation header is compact: 56px high with a 20px top strip on desktop, and 54px with an 18px strip on mobile. Shared CSS variables keep hero sizing, sticky positioning and anchor offsets aligned with these heights.
+Touch swipes, Page Up/Down, arrow keys and section navigation are supported. Form inputs, zoom gestures, horizontal product scrolling and open dialogs retain their own interactions. On extremely short windows, the compact product pane can scroll internally to keep controls reachable. The banner and scene anchors remain stable when filters change.
 
-The ticker and entire catalog introduction (heading, category controls, search and filter toolbar) also rise and fade in progressively on scroll, before the product cards. Their outer layout stays stable, and keyboard focus reveals controls immediately.
+The header is 56px high with a 20px top strip on desktop, and 54px with an 18px strip on mobile. Shared variables align screen heights and navigation offsets. Motion preferences disable animated transitions and start the image carousel paused.
 
-Features: responsive navigation, category browsing, full-text search, price/category filtering, sorting, saved products, product detail dialogs, quantity controls, a persistent demonstration bag and a clearly labeled bag review. Dialogs support Escape and keyboard navigation. Reduced motion preferences are respected.
+## Demo catalog and source
 
-Editable source is in this directory: `index.html`, `styles.css`, `app.js`, and `assets/`. Run `python3 build.py` here to regenerate the standalone HTML and ZIP in the parent directory.
+Twelve original concept products support search, category/price filters, sorting, saved products, details, quantity controls and a persistent demonstration bag. Names, specifications, prices and generated photography are illustrative, not live inventory or an offer for sale. Bag review places no order and collects no payment. Saved products and bag contents stay only in this browser.
+
+Editable files: `index.html`, `styles.css`, `app.js`, `scenes.js`, and `assets/`. Run `python3 build.py` from this directory to rebuild the standalone HTML and ZIP in the parent directory.
 
 Archivo is distributed under the SIL Open Font License; see `FONT-LICENSE.txt`.

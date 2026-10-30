@@ -20,6 +20,7 @@ html = html.replace('assets/hero-2.png', embedded('assets/hero-2.png','image/png
 html = html.replace('assets/hero-3.png', embedded('assets/hero-3.png','image/png'))
 script = (ROOT / 'app.js').read_text()
 html = html.replace('<script src="app.js"></script>', '<script>\n' + script + '\n</script>')
+html = html.replace('<script src="scenes.js"></script>', '<script>\n' + (ROOT / 'scenes.js').read_text() + '\n</script>')
 TARGET.write_text(html)
 with zipfile.ZipFile(ROOT.parent / 'ga-checkpoint-new.zip','w',compression=zipfile.ZIP_DEFLATED,compresslevel=6) as archive:
     archive.write(TARGET,TARGET.name)
