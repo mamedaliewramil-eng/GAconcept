@@ -10,6 +10,8 @@ Open `ga-checkpoint-new.html` from the downloadable ZIP in a browser. Images, st
 2. A complete second screen contains the ticker, search/filter controls, first six products and a shorter full-width photographic banner. A vertical wheel gesture advances to this screen as a whole. The next gesture advances to stage three. Trackpad momentum is consumed until the gesture ends, preventing an accidental double advance.
 3. The second product row and all remaining collections, stories and footer use normal, unrestricted page scrolling. Scrolling back to the top of this area returns to the section transitions.
 
+Adjacent sections enter and exit over approximately one second with a smooth acceleration and deceleration curve. Foreground content moves in the direction of travel with a small additional slide and gentle opacity change; the header and layout anchors stay stable. Reverse navigation mirrors the effect. Finishing, cancelling, resizing or enabling reduced motion clears every temporary visual offset, so the third section returns to native scrolling without any retained transforms.
+
 Touch swipes, Page Up/Down, arrow keys and section navigation are supported. Form inputs, zoom gestures, horizontal product scrolling and open dialogs retain their own interactions. On extremely short windows, the compact product pane can scroll internally to keep controls reachable. The banner and scene anchors remain stable when filters change.
 
 The header is 56px high with a 20px top strip on desktop, and 54px with an 18px strip on mobile. Shared variables align screen heights and navigation offsets. Motion preferences disable animated transitions and start the image carousel paused.

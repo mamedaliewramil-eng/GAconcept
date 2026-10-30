@@ -10,6 +10,7 @@
   let animating = false;
   let animationFrame = 0;
   let animationResolve;
+  let activeTarget = null;
   let scrollFrame = 0;
   let settleTimer;
   let resizeTimer;
@@ -20,6 +21,36 @@
   let gestureUsed = false;
   let touch;
   const QUIET_GAP = 220;
+  const surfaces = [
+    [...scenes[0].querySelectorAll('.hero-copy,.hero-bottom')],
+    [...scenes[1].children],
+    [...scenes[2].children]
+  ];
+  surfaces.flat().forEach(surface => surface.dataset.transitionSurface = '');
+
+  function clearTransitionVisuals() {
+    document.body.classList.remove('scene-transitioning');
+    scenes.forEach(scene => {
+      delete scene.dataset.transitioning;
+      scene.style.removeProperty('--scene-shift');
+      scene.style.removeProperty('--scene-opacity');
+    });
+  }
+
+  function transitionVisuals(fromIndex,toIndex,direction) {
+    if (fromIndex === toIndex) return () => {};
+    const outgoing = scenes[fromIndex];
+    const incoming = scenes[toIndex];
+    const travel = Math.min(90,Math.max(45,innerHeight * .08));
+    outgoing.dataset.transitioning = 'true';
+    incoming.dataset.transitioning = 'true';
+    return progress => {
+      outgoing.style.setProperty('--scene-shift',`${(-direction * travel * progress).toFixed(2)}px`);
+      outgoing.style.setProperty('--scene-opacity',String(1 - .18 * progress));
+      incoming.style.setProperty('--scene-shift',`${(direction * travel * (1 - progress)).toFixed(2)}px`);
+      incoming.style.setProperty('--scene-opacity',String(.76 + .24 * progress));
+    };
+  }
 
   function measure() {
     const headerHeight = header.getBoundingClientRect().height;
@@ -46,22 +77,30 @@
     clearTimeout(settleTimer);
     cancelAnimationFrame(animationFrame);
     if (animationResolve) { animationResolve(false);animationResolve = null; }
+    clearTransitionVisuals();
+    activeTarget = index;
     const from = scrollY;
     const destination = anchors[index];
-    const duration = motion.matches || options.instant ? 0 : 580;
+    const departure = current;
+    const duration = motion.matches || options.instant ? 0 : 900 + Math.min(2,Math.abs(index - departure)) * 100;
     if (!duration || Math.abs(destination - from) < 2) {
       animating = false;
+      activeTarget = null;
       window.scrollTo(0,destination);
       update();
       return Promise.resolve(true);
     }
     animating = true;
+    document.body.classList.add('scene-transitioning');
+    const paint = transitionVisuals(departure,index,Math.sign(destination - from));
+    paint(0);
     return new Promise(resolve => {
       animationResolve = resolve;
       const started = performance.now();
       function tick(now) {
         const progress = Math.min(1,(now - started) / duration);
-        const eased = progress < .5 ? 4 * progress ** 3 : 1 - (-2 * progress + 2) ** 3 / 2;
+        const eased = progress ** 3 * (progress * (progress * 6 - 15) + 10);
+        paint(eased);
         window.scrollTo(0,Math.round(from + (destination - from) * eased));
         update();
         if (progress < 1) animationFrame = requestAnimationFrame(tick);
@@ -69,6 +108,8 @@
           window.scrollTo(0,destination);
           animating = false;
           animationResolve = null;
+          activeTarget = null;
+          clearTransitionVisuals();
           update();
           resolve(true);
         }
@@ -189,17 +230,21 @@
     }
   },{passive:true});
   window.addEventListener('resize',() => {
-    const index = current;
+    const index = activeTarget === null ? current : activeTarget;
+    const wasAnimating = activeTarget !== null;
     const version = navigationVersion;
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
       refresh();
-      if (index < 2 && version === navigationVersion) goTo(index,{instant:true});
+      if ((wasAnimating || index < 2) && version === navigationVersion) goTo(index,{instant:true});
     },150);
   },{passive:true});
   window.addEventListener('load',refresh,{once:true});
+  motion.addEventListener('change',event => {
+    if (event.matches && activeTarget !== null) goTo(activeTarget,{instant:true});
+  });
 
-  window.storeScenes = {goTo,refresh,get current() {return current;},get anchors() {return [...anchors];}};
+  window.storeScenes = {goTo,refresh,get current() {return current;},get anchors() {return [...anchors];},get transitioning() {return animating;}};
   refresh();
   if (location.hash === '#catalog' || location.hash === '#scene-2') goTo(1,{instant:true});
   else if (location.hash === '#scene-3') goTo(2,{instant:true});

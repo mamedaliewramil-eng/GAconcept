@@ -210,3 +210,7 @@ html{scroll-behavior:auto;scroll-padding-top:var(--header-height)}
 #scene-2 .catalog-intro,#scene-2 .catalog-intro>[data-reveal-content],#scene-2 .product-grid{min-width:0;max-width:100%}
 .announcement a:hover{color:#fff;text-decoration:underline;text-underline-offset:3px}
 .header-actions #wishlist-toggle[aria-pressed=true] svg{fill:var(--accent);stroke:var(--accent)}
+
+/* A slower, directional slide for each scene, without moving its layout anchor. */
+.scroll-scene[data-transitioning=true] [data-transition-surface]{transform:translate3d(0,var(--scene-shift,0px),0);opacity:var(--scene-opacity,1);transition:none!important;will-change:transform,opacity}
+@media(prefers-reduced-motion:reduce){.scroll-scene[data-transitioning=true] [data-transition-surface]{transform:none;opacity:1;will-change:auto}}
