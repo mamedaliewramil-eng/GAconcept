@@ -8,7 +8,7 @@ Extract the downloadable ZIP and open its only HTML file, `index.html`, in a bro
 
 1. The compact header and full-cover photographic carousel form the first screen. Three images crossfade every 15 seconds, with manual controls and pause.
 2. The full second screen is the category chooser, “PICK YOUR PURSUIT.”: boats, electronics and essentials. The three large tiles sit in a row on desktop and compact stacked rows on mobile. Selecting one filters the products and advances to block three.
-3. The third screen contains the ticker, search/filter controls and all 30 catalog products. A horizontally scrolling grid has two rows, with six visible cards per row on wide screens and fewer columns on smaller screens. Square framed arrow controls (32×31px) sit on the right and move the grid left or right. The photographic banner has moved out of this screen.
+3. The third screen contains the ticker, search/filter controls and all 30 catalog products. A horizontally scrolling grid has two rows, with six visible cards per row on wide screens and fewer columns on smaller screens. Each group fills the top row from left to right before the bottom row; five Electronics results therefore occupy the first five top-row cells on desktop. Search, filtering and sorting restart the rail at its first result. Square framed arrow controls (32×31px) sit on the right and move the grid left or right. The photographic banner has moved out of this screen.
 4. The fourth screen is a separate “YOU MIGHT LIKE THESE.” showcase of six handpicked new products. Every showcase product also exists in the full catalog; this selection is independent of catalog search, category/price filters, sorting and saved-only mode. The “TAKE THE LONG WAY.” photographic banner moved here from screen three, replacing the removed “GOOD GEAR. GREAT DAYS.” banner.
 5. The “READY WHEN YOU ARE.” field notes start 12px below the fixed header, with the advice aligned toward the top. They form a complete fifth screen, reached by the same smooth section transition. Further scrolling below this screen is native and unrestricted toward the footer. Scrolling back above it returns to the section transitions.
 
@@ -22,13 +22,17 @@ The fixed header stays at the top throughout the page: 42px high on desktop and 
 
 The desktop category navigation is centered relative to the whole header, with its original small 11px Arial lettering and normal capitalization: Shop all, Boats, Electronics, Essentials. Each label has the reference-style eight-point nautical compass rose, two rings and N/E/S/W letters on a transparent background. The rose is 26px in the header and 30px in the mobile drawer; its image is embedded in the offline HTML.
 
+Hovered and selected header categories underline only the text; the compass is outside the underline.
+
 ## Catalog and source
 
 Thirty products support search, category/price filters, sorting, saved products, details, quantity controls and a persistent bag. Six handpicked products form the default showcase and also appear in the full catalog. Saved products and bag contents stay in this browser. The bag review opens an item summary; order submission and payment integration can be added independently. A product has the same saved status and bag quantity whether opened from the catalog or the showcase.
 
 Photo badges retain their original labels with contrasting 10px text, white backgrounds and wrapping. Saving a product updates existing card controls in place, preserving card reveal state and scroll positions; the card heart appearance is unchanged. Saved-only removals preserve surviving card nodes and the independent showcase. Adding a saved item or bag item gives a brief product-thumbnail confirmation; reduced motion uses a static thumbnail. Feedback remains visible above product and bag dialogs.
 
-Upward native scrolling below the fifth screen hands off near its boundary to one decelerating transition into screen four. Queued native momentum is stopped during that transition, and stale snap timers cannot compete with it.
+Upward native scrolling below the fifth screen decelerates to a stop at the start of screen five. Remaining momentum from the same gesture is consumed there. A separate subsequent wheel gesture, a new key press after release or a new touch swipe advances to screen four. Queued native momentum is stopped during the brake, and stale snap timers cannot compete with it.
+
+The footer's Back to top link returns directly to the introductory photo with the same downward panel reveal as the second-to-first scene transition, taking 1.25 seconds. The current panel slides down over the stationary opening photo; the header stays in place and no intermediate sections appear. A sliding cover provides the direct return when the View Transitions API is unavailable. Reduced motion returns instantly.
 
 Choose the fourth-screen products and their display order by editing `SHOWCASE_PRODUCT_IDS` in `app.js`:
 

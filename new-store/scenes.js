@@ -24,8 +24,11 @@
   let touch;
   let lastBackdropOpacity;
   let nativeReturnUntil = 0;
+  let stoppedAfterFreeScroll = false;
   let lastObservedScroll = scrollY;
   let nativeScrollLock = null;
+  let returningHome = false;
+  let homePositioned = false;
   const QUIET_GAP = 220;
   const surfaces = scenes.map((scene,index) => index === 0
     ? [...scene.querySelectorAll('.hero-copy,.hero-bottom')]
@@ -35,6 +38,7 @@
   function returnZone() { return Math.min(180,Math.max(70,innerHeight * .16)); }
 
   function lockNativeScroll() {
+    if (nativeScrollLock) return;
     const root = document.documentElement;
     nativeScrollLock = {overflowY:root.style.overflowY,gutter:root.style.scrollbarGutter};
     // Preserve the scrollbar's space while stopping its already queued native momentum.
@@ -122,7 +126,16 @@
 
   function refresh() { measure();update(); }
 
+  function stopAtLastScene() {
+    gestureUsed = true;
+    wheelTotal = 0;
+    lastWheel = performance.now();
+    if (touch) touch.used = true;
+    return goTo(lastScene,{fromFree:true,stopAtLast:true});
+  }
+
   function goTo(index,options = {}) {
+    if (returningHome && !options.homeReturn) return Promise.resolve(false);
     index = Math.max(0,Math.min(lastScene,Number(index) || 0));
     navigationVersion += 1;
     measure();
@@ -131,6 +144,7 @@
     if (animationResolve) { animationResolve(false);animationResolve = null; }
     clearTransitionVisuals();
     nativeReturnUntil = 0;
+    stoppedAfterFreeScroll = !!options.stopAtLast;
     activeTarget = index;
     const from = scrollY;
     const destination = anchors[index];
@@ -142,12 +156,13 @@
     const heroPanel = pair !== null && pair[0] === 0 && pair[1] === 1;
     const returningFromFree = !!options.fromFree && destination < from;
     const duration = motion.matches || options.instant ? 0 : returningFromFree
-      ? Math.min(1450,Math.max(1100,Math.abs(destination - from) * 1.1))
+      ? Math.min(900,Math.max(420,Math.abs(destination - from) * 2.4))
       : heroPanel ? 1250 : 1100 + Math.max(0,Math.abs(index - departure) - 1) * 100;
     if (!duration || Math.abs(destination - from) < 2) {
       animating = false;
       activeTarget = null;
       window.scrollTo(0,destination);
+      if (stoppedAfterFreeScroll) lastWheel = performance.now();
       update();
       return Promise.resolve(true);
     }
@@ -175,12 +190,98 @@
           animationResolve = null;
           activeTarget = null;
           clearTransitionVisuals();
+          // Finish this gesture at screen five, including any trailing wheel momentum.
+          if (stoppedAfterFreeScroll) lastWheel = performance.now();
           update();
           resolve(true);
         }
       }
       animationFrame = requestAnimationFrame(tick);
     });
+  }
+
+  async function returnHome() {
+    if (returningHome) return;
+    if (motion.matches) {
+      await goTo(0,{instant:true});
+      gestureUsed = true;
+      wheelTotal = 0;
+      lastWheel = performance.now();
+      touch = null;
+      return;
+    }
+    // Capture only the departing footer and arriving hero, without scrolling past other screens.
+    clearTimeout(settleTimer);
+    cancelAnimationFrame(animationFrame);
+    if (animationResolve) { animationResolve(false);animationResolve = null; }
+    animating = false;
+    activeTarget = null;
+    clearTransitionVisuals();
+    nativeReturnUntil = 0;
+    returningHome = true;
+    homePositioned = false;
+    document.documentElement.classList.add('returning-home');
+    lockNativeScroll();
+    let cover;
+    let heroArrival;
+    const positionHome = async () => {
+      await goTo(0,{instant:true,homeReturn:true});
+      homePositioned = true;
+      lockNativeScroll();
+    };
+    try {
+      if (typeof document.startViewTransition === 'function') {
+        const transition = document.startViewTransition(positionHome);
+        await transition.finished;
+      } else {
+        cover = document.createElement('div');
+        cover.className = 'home-return-cover';
+        cover.setAttribute('aria-hidden','true');
+        cover.inert = true;
+        const viewportTop = header.getBoundingClientRect().bottom;
+        const visiblePanels = [...scenes,document.querySelector('.site-footer'),document.querySelector('.announcement')];
+        visiblePanels.filter(Boolean).forEach(panel => {
+          const bounds = panel.getBoundingClientRect();
+          if (bounds.bottom <= viewportTop || bounds.top >= innerHeight) return;
+          const copy = panel.cloneNode(true);
+          const originals = [panel,...panel.querySelectorAll('*')];
+          const copies = [copy,...copy.querySelectorAll('*')];
+          // Freeze the visible appearance before removing duplicate IDs and their dependent selectors.
+          copies.forEach((node,index) => {
+            const computed = getComputedStyle(originals[index]);
+            node.style.cssText = [...computed].map(property => `${property}:${computed.getPropertyValue(property)}`).join(';');
+            node.removeAttribute('id');
+          });
+          Object.assign(copy.style,{position:'absolute',top:`${bounds.top - viewportTop}px`,left:`${bounds.left}px`,right:'auto',bottom:'auto',width:`${bounds.width}px`,height:`${bounds.height}px`,margin:'0'});
+          cover.append(copy);
+        });
+        document.body.append(cover);
+        await positionHome();
+        if (typeof cover.animate === 'function') {
+          const timing = {duration:1250,easing:'cubic-bezier(.37,0,.63,1)',fill:'forwards'};
+          heroArrival = scenes[0].animate([{opacity:0},{opacity:1}],timing);
+          await Promise.all([
+            cover.animate([{transform:'translateY(0)'},{transform:'translateY(100%)'}],timing).finished,
+            heroArrival.finished
+          ]);
+        }
+      }
+    } catch (_) {
+      // A skipped snapshot or interrupted browser animation must still complete navigation.
+      await positionHome();
+    } finally {
+      cover?.remove();
+      heroArrival?.cancel();
+      document.documentElement.classList.remove('returning-home');
+      releaseNativeScroll();
+      returningHome = false;
+      homePositioned = false;
+      gestureUsed = true;
+      wheelTotal = 0;
+      lastWheel = performance.now();
+      touch = null;
+      refresh();
+    }
   }
 
   function editable(target) {
@@ -201,6 +302,10 @@
   }
 
   function onWheel(event) {
+    if (returningHome) {
+      if (!event.ctrlKey && !event.metaKey) event.preventDefault();
+      return;
+    }
     if (ignore(event) || event.shiftKey || Math.abs(event.deltaX) > Math.abs(event.deltaY) || !event.deltaY) return;
     const unit = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? innerHeight : 1;
     const delta = event.deltaY * unit;
@@ -209,15 +314,17 @@
     const quiet = now - lastWheel > QUIET_GAP;
 
     if (y > anchors[lastScene] + 4 && !animating) {
+      if (delta > 0) stoppedAfterFreeScroll = false;
       nativeReturnUntil = delta < 0 ? now + 1000 : 0;
       if (delta < 0 && (y <= anchors[lastScene] + returnZone() || y + delta <= anchors[lastScene] + returnZone())) {
-        event.preventDefault();gestureUsed = true;wheelTotal = 0;lastWheel = now;
-        goTo(lastScene - 1,{fromFree:true});
+        event.preventDefault();
+        stopAtLastScene();
       }
       return;
     }
     if (y >= anchors[lastScene] - 4 && delta > 0 && !animating && (quiet || !gestureUsed)) {
       gestureUsed = false;
+      stoppedAfterFreeScroll = false;
       return;
     }
 
@@ -239,26 +346,28 @@
   window.addEventListener('wheel',onWheel,{passive:false});
 
   window.addEventListener('touchstart',event => {
+    if (returningHome) { touch = null;return; }
     if (event.touches.length !== 1 || ignore(event)) { touch = null;return; }
     const point = event.touches[0];
     touch = {x:point.clientX,y:point.clientY,startScroll:scrollY,used:false};
   },{passive:true});
   window.addEventListener('touchmove',event => {
+    if (returningHome) { if (event.cancelable) event.preventDefault();return; }
     if (!touch || event.touches.length !== 1 || ignore(event)) return;
     const point = event.touches[0];
     const dy = touch.y - point.clientY;
     const dx = touch.x - point.clientX;
     if (Math.abs(dx) > Math.abs(dy) || Math.abs(dy) < 12) return;
     if (scrollY > anchors[lastScene] + 4 && !animating) {
+      if (dy > 0) stoppedAfterFreeScroll = false;
       nativeReturnUntil = dy < 0 ? performance.now() + 1000 : 0;
       if (dy < 0 && (scrollY <= anchors[lastScene] + returnZone() || touch.startScroll + dy <= anchors[lastScene] + returnZone())) {
         if (event.cancelable) event.preventDefault();
-        touch.used = true;
-        goTo(lastScene - 1,{fromFree:true});
+        stopAtLastScene();
       }
       return;
     }
-    if (scrollY >= anchors[lastScene] - 4 && dy > 0 && !animating && !touch.used) return;
+    if (scrollY >= anchors[lastScene] - 4 && dy > 0 && !animating && !touch.used) { stoppedAfterFreeScroll = false;return; }
     if (event.cancelable) event.preventDefault();
     if (touch.used || animating || Math.abs(dy) < 45) return;
     touch.used = true;
@@ -268,16 +377,22 @@
   window.addEventListener('touchcancel',() => { touch = null; },{passive:true});
 
   document.addEventListener('keydown',event => {
+    if (returningHome) {
+      if (['Home','End','PageUp','PageDown','ArrowUp','ArrowDown',' '].includes(event.key) && !event.ctrlKey && !event.metaKey) event.preventDefault();
+      return;
+    }
     if (ignore(event) || event.altKey || event.target.closest('button,[role="button"]')) return;
     const down = event.key === 'PageDown' || event.key === 'ArrowDown' || event.key === ' ' && !event.shiftKey;
     const up = event.key === 'PageUp' || event.key === 'ArrowUp' || event.key === ' ' && event.shiftKey;
     if (event.key === 'Home' && !event.ctrlKey) { event.preventDefault();goTo(0);return; }
     if (!down && !up) return;
+    if (animating || up && event.repeat && stoppedAfterFreeScroll && scrollY <= anchors[lastScene] + 4) { event.preventDefault();return; }
+    if (down && scrollY >= anchors[lastScene] - 4) stoppedAfterFreeScroll = false;
     if (scrollY > anchors[lastScene] + 4) {
       nativeReturnUntil = up ? performance.now() + 1000 : 0;
       const step = event.key === 'ArrowUp' ? 40 : innerHeight;
       if (up && (scrollY <= anchors[lastScene] + returnZone() || scrollY - step <= anchors[lastScene] + returnZone())) {
-        event.preventDefault();goTo(lastScene - 1,{fromFree:true});
+        event.preventDefault();stopAtLastScene();
       }
       return;
     }
@@ -291,6 +406,7 @@
     if (button) { event.preventDefault();goTo(Number(button.dataset.sceneGo));return; }
     const link = event.target.closest('a[href^="#"]');
     if (!link || link.closest('dialog')) return;
+    if (link.classList.contains('back-top')) { event.preventDefault();returnHome();return; }
     const target = link.getAttribute('href');
     const index = sceneIndex(target);
     if (index === null) return;
@@ -304,6 +420,10 @@
   });
 
   window.addEventListener('scroll',() => {
+    if (returningHome) {
+      if (homePositioned && scrollY !== 0) window.scrollTo(0,0);
+      return;
+    }
     const y = Math.max(0,scrollY);
     const movingUp = y < lastObservedScroll - .5;
     lastObservedScroll = y;
@@ -311,9 +431,7 @@
     clearTimeout(settleTimer);
     // Native touch/trackpad momentum may cross the zone without another input event.
     if (!animating && movingUp && performance.now() < nativeReturnUntil && y <= anchors[lastScene] + returnZone() && y > anchors[lastScene - 1] + 4 && !document.querySelector('dialog[open]')) {
-      gestureUsed = true;wheelTotal = 0;lastWheel = performance.now();
-      if (touch) touch.used = true;
-      goTo(lastScene - 1,{fromFree:true});
+      stopAtLastScene();
       return;
     }
     if (!animating && scrollY > 2 && scrollY < anchors[lastScene] - 4 && !document.querySelector('dialog[open]')) {
@@ -334,12 +452,12 @@
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
       refresh();
-      if ((wasAnimating || index < lastScene) && version === navigationVersion) goTo(index,{instant:true});
+      if ((wasAnimating || index < lastScene) && version === navigationVersion) goTo(index,{instant:true,stopAtLast:stoppedAfterFreeScroll && index === lastScene});
     },150);
   },{passive:true});
   window.addEventListener('load',refresh,{once:true});
   motion.addEventListener('change',event => {
-    if (event.matches && activeTarget !== null) goTo(activeTarget,{instant:true});
+    if (event.matches && activeTarget !== null) goTo(activeTarget,{instant:true,stopAtLast:stoppedAfterFreeScroll && activeTarget === lastScene});
   });
 
   function sceneIndex(target) {
@@ -348,7 +466,7 @@
     return index < 0 ? null : index;
   }
 
-  window.storeScenes = {goTo,refresh,get current() {return current;},get anchors() {return [...anchors];},get transitioning() {return animating;}};
+  window.storeScenes = {goTo,refresh,get current() {return current;},get anchors() {return [...anchors];},get transitioning() {return animating;},get returningHome() {return returningHome;}};
   refresh();
   const initialScene = sceneIndex(location.hash);
   if (initialScene !== null) goTo(initialScene,{instant:true});

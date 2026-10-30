@@ -212,6 +212,8 @@ function renderCatalog(focusSavedId,focusRailId) {
   const showcase = showcaseProducts();
   productObserver?.disconnect();
   $('#product-grid').innerHTML = visible.map(productMarkup).join('');
+  layoutCatalogRows();
+  $('#product-grid').scrollLeft = 0;
   $('#secondary-grid').innerHTML = showcase.map(productMarkup).join('');
   $('#secondary-collection').hidden = !showcase.length;
   $('#secondary-empty').hidden = !!showcase.length;
@@ -328,6 +330,7 @@ function reconcileSavedCatalog() {
   rail.hidden = !visible.length;
   $('#empty-state').hidden = !!visible.length;
   $('#result-count').textContent = `${visible.length} saved ${visible.length === 1 ? 'item' : 'items'}`;
+  layoutCatalogRows();
   rail.scrollLeft = left;
   updateRailControls();
   if (focusedCard && !focused.isConnected) {
@@ -410,6 +413,18 @@ function removeBagLine(id) {
   const focusTarget = $('#cart-lines [data-cart-remove]') || $('#cart-dialog [data-close]');
   focusTarget?.focus({preventScroll:true});
   showToast(`${product?.name || 'Product'} removed from your bag.`);
+}
+
+function layoutCatalogRows() {
+  const rail = $('#product-grid');
+  const columns = Math.max(1,parseInt(getComputedStyle(rail).getPropertyValue('--catalog-columns'),10) || 6);
+  // Fill each horizontal page across its first row, then across its second row.
+  [...rail.children].forEach((card,index) => {
+    const page = Math.floor(index / (columns * 2));
+    const slot = index % (columns * 2);
+    card.style.gridRowStart = String(Math.floor(slot / columns) + 1);
+    card.style.gridColumnStart = String(page * columns + slot % columns + 1);
+  });
 }
 
 function updateRailControls() {
@@ -505,7 +520,7 @@ $$('[data-rail]').forEach(button => button.addEventListener('click',() => {
   rail.scrollBy({left:Math.max(240,rail.clientWidth * .8) * Number(button.dataset.direction),behavior:reducedMotion() ? 'auto' : 'smooth'});
 }));
 $$('.product-rail').forEach(rail => rail.addEventListener('scroll',() => { updateRailControls();scheduleCardReveal(); },{passive:true}));
-window.addEventListener('resize',updateRailControls,{passive:true});
+window.addEventListener('resize',() => { layoutCatalogRows();updateRailControls(); },{passive:true});
 window.addEventListener('scroll',scheduleCardReveal,{passive:true});
 window.addEventListener('resize',scheduleCardReveal,{passive:true});
 
