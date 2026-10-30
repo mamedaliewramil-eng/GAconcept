@@ -10,7 +10,7 @@ Extract the downloadable ZIP and open its only HTML file, `index.html`, in a bro
 2. The full second screen is the category chooser, “PICK YOUR PURSUIT.”: boats, electronics and essentials. The three large tiles sit in a row on desktop and compact stacked rows on mobile. Selecting one filters the products and advances to block three.
 3. The third screen contains the ticker, search/filter controls, first six products and a shorter full-width photographic banner.
 4. The fourth screen pairs the second product row with a compact “GOOD GEAR. GREAT DAYS.” photographic banner. The banner takes the same lower 30% as the first product screen; its eyebrow, both paragraphs and button remain visible. Shorter product spacing and smaller type keep the whole banner in view.
-5. The “READY WHEN YOU ARE.” field notes form a complete fifth screen, reached by the same smooth section transition. Further scrolling below this screen is native and unrestricted toward the footer. Scrolling back above it returns to the section transitions.
+5. The “READY WHEN YOU ARE.” field notes start 12px below the fixed header, with the advice aligned toward the top. They form a complete fifth screen, reached by the same smooth section transition. Further scrolling below this screen is native and unrestricted toward the footer. Scrolling back above it returns to the section transitions.
 
 The category screen rises as one opaque white panel over the introductory photo in 1.25 seconds, using a sine easing curve and a soft shadow along its leading edge. The photo stays under the fixed header, fills the screen as the announcement scrolls away, and fades behind the incoming categories. Other adjacent blocks, including four to five, transition in 1.1 seconds. Every adjacent pair uses absolute scroll progress so reversing midway preserves the current offsets. Trackpad momentum is consumed until a gesture ends. Finishing, cancelling, resizing or enabling reduced motion clears temporary effects, so scrolling after block five remains unrestricted.
 
@@ -20,7 +20,7 @@ Touch swipes, Page Up/Down, arrow keys and section navigation are supported. For
 
 The fixed header stays at the top throughout the page: 42px high on desktop and 44px on mobile. A separate 16px strip (14px on mobile) scrolls away. The original GA Checkpoint logo retains its blue gear, red accents and tagline. The hero fills all remaining first-screen space with no margins, borders or image padding. Shared variables align screen heights and navigation offsets. Motion preferences disable animated transitions and start the image carousel paused.
 
-The desktop category navigation is centered relative to the whole header. Its larger 18px Archivo lettering matches the site's display type, and each of the four category labels has an outline nautical compass. The mobile drawer uses the same compass treatment.
+The desktop category navigation is centered relative to the whole header, with its original small 11px Arial lettering and normal capitalization: Shop all, Boats, Electronics, Essentials. Each label has the reference-style eight-point nautical compass rose, two rings and N/E/S/W letters on a transparent background. The rose is 26px in the header and 30px in the mobile drawer; its image is embedded in the offline HTML.
 
 ## Demo catalog and source
 
