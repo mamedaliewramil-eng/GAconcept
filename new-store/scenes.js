@@ -32,6 +32,10 @@
 
   function clearTransitionVisuals() {
     document.body.classList.remove('scene-transitioning');
+    delete document.body.dataset.sceneTransition;
+    heroBackdrop.style.removeProperty('--hero-hold');
+    heroBackdrop.style.removeProperty('--hero-fill');
+    scenes[1].style.removeProperty('--panel-shadow-opacity');
     scenes.forEach(scene => {
       delete scene.dataset.transitioning;
       scene.style.removeProperty('--scene-shift');
@@ -39,14 +43,29 @@
     });
   }
 
-  function transitionVisuals(fromIndex,toIndex,direction) {
-    if (fromIndex === toIndex) return () => {};
-    const outgoing = scenes[fromIndex];
-    const incoming = scenes[toIndex];
-    const travel = Math.min(90,Math.max(45,innerHeight * .08));
+  function transitionVisuals(fromIndex,toIndex,direction,heroPanel) {
+    if (fromIndex === toIndex && !heroPanel) return () => {};
+    const outgoing = scenes[heroPanel ? direction > 0 ? 0 : 1 : fromIndex];
+    const incoming = scenes[heroPanel ? direction > 0 ? 1 : 0 : toIndex];
+    const travel = Math.min(110,Math.max(45,innerHeight * .1));
+    const announcementHeight = document.querySelector('.announcement').getBoundingClientRect().height;
+    if (heroPanel) document.body.dataset.sceneTransition = 'hero-panel';
     outgoing.dataset.transitioning = 'true';
     incoming.dataset.transitioning = 'true';
     return progress => {
+      if (heroPanel) {
+        // Use the actual scroll position so reversing midway preserves every offset.
+        const reveal = Math.max(0,Math.min(1,scrollY / anchors[1]));
+        scenes[0].style.setProperty('--scene-shift',`${(-travel * reveal).toFixed(2)}px`);
+        scenes[0].style.setProperty('--scene-opacity',String(1 - .18 * reveal));
+        scenes[1].style.setProperty('--scene-shift',`${(travel * (1 - reveal)).toFixed(2)}px`);
+        scenes[1].style.setProperty('--scene-opacity','1');
+        // Hold and extend the photo as the thin announcement strip scrolls away.
+        heroBackdrop.style.setProperty('--hero-hold',`${Math.max(0,scrollY - announcementHeight)}px`);
+        heroBackdrop.style.setProperty('--hero-fill',`${Math.min(scrollY,announcementHeight)}px`);
+        scenes[1].style.setProperty('--panel-shadow-opacity',(Math.sin(Math.PI * reveal) * .16).toFixed(4));
+        return;
+      }
       outgoing.style.setProperty('--scene-shift',`${(-direction * travel * progress).toFixed(2)}px`);
       outgoing.style.setProperty('--scene-opacity',String(1 - .18 * progress));
       incoming.style.setProperty('--scene-shift',`${(direction * travel * (1 - progress)).toFixed(2)}px`);
@@ -89,7 +108,8 @@
     const from = scrollY;
     const destination = anchors[index];
     const departure = current;
-    const duration = motion.matches || options.instant ? 0 : 900 + Math.min(2,Math.abs(index - departure)) * 100;
+    const heroPanel = index <= 1 && from <= anchors[1] + 2 && Math.min(from,destination) < anchors[1] && Math.max(from,destination) > 0;
+    const duration = motion.matches || options.instant ? 0 : heroPanel ? 1250 : 900 + Math.min(2,Math.abs(index - departure)) * 100;
     if (!duration || Math.abs(destination - from) < 2) {
       animating = false;
       activeTarget = null;
@@ -99,16 +119,16 @@
     }
     animating = true;
     document.body.classList.add('scene-transitioning');
-    const paint = transitionVisuals(departure,index,Math.sign(destination - from));
+    const paint = transitionVisuals(departure,index,Math.sign(destination - from),heroPanel);
     paint(0);
     return new Promise(resolve => {
       animationResolve = resolve;
       const started = performance.now();
       function tick(now) {
         const progress = Math.min(1,(now - started) / duration);
-        const eased = progress ** 3 * (progress * (progress * 6 - 15) + 10);
-        paint(eased);
+        const eased = heroPanel ? .5 - Math.cos(Math.PI * progress) / 2 : progress ** 3 * (progress * (progress * 6 - 15) + 10);
         window.scrollTo(0,Math.round(from + (destination - from) * eased));
+        paint(eased);
         update();
         if (progress < 1) animationFrame = requestAnimationFrame(tick);
         else {
