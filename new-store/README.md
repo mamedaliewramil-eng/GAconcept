@@ -2,7 +2,7 @@
 
 A new HTML/CSS/JavaScript implementation built from scratch, with Attitude as the initial visual direction and GA Checkpoint blue, red, white and graphite branding. The original logo artwork is embedded in the header; the earlier GA layout, catalog data and scripts are not reused.
 
-Open `ga-checkpoint-new.html` from the downloadable ZIP in a browser. Images, styles, both JavaScript files and the Archivo font are embedded; the demonstration store makes no external requests.
+Extract the downloadable ZIP and open its only HTML file, `index.html`, in a browser. Images, styles, both JavaScript files and the Archivo font are embedded; the demonstration store makes no external requests. The root `index.html`, this directory's `index.html` and `ga-checkpoint-new.html` are identical standalone builds and can each be downloaded separately.
 
 ## Three scrolling stages
 
@@ -22,6 +22,6 @@ The fixed header stays at the top throughout the page: 42px high on desktop and 
 
 Twelve original concept products support search, category/price filters, sorting, saved products, details, quantity controls and a persistent demonstration bag. Names, specifications, prices and generated photography are illustrative, not live inventory or an offer for sale. Bag review places no order and collects no payment. Saved products and bag contents stay only in this browser.
 
-Editable files: `index.html`, `styles.css`, `app.js`, `scenes.js`, and `assets/`. Run `python3 build.py` from this directory to rebuild the standalone HTML and ZIP in the parent directory.
+Editable files: `template.html.in`, `styles.css`, `app.js`, `scenes.js`, and `assets/`. Run `python3 build.py` from this directory to rebuild all standalone HTML entry points and the ZIP in the parent directory. The build rejects any remaining external stylesheet, script, image or CSS asset dependency. Do not edit the generated `index.html` files directly.
 
 Archivo is distributed under the SIL Open Font License; see `FONT-LICENSE.txt`.

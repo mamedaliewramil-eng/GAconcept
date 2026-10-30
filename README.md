@@ -1,8 +1,8 @@
 # GA Checkpoint — marine storefront
 
-**[Скачать новую версию ZIP](https://github.com/mamedaliewramil-eng/GAconcept/raw/refs/heads/main/ga-checkpoint-new.zip)** · [HTML](ga-checkpoint-new.html) · [Первый экран](new-preview-desktop.png) · [Второй экран](new-preview-scene-2.png) · [Третий экран](new-preview-scene-3.png) · [Телефон](new-preview-mobile.png)
+**[Скачать готовый HTML](https://github.com/mamedaliewramil-eng/GAconcept/raw/refs/heads/main/index.html)** · **[Скачать ZIP](https://github.com/mamedaliewramil-eng/GAconcept/raw/refs/heads/main/ga-checkpoint-new.zip)** · [Первый экран](new-preview-desktop.png) · [Второй экран](new-preview-scene-2.png) · [Третий экран](new-preview-scene-3.png) · [Телефон](new-preview-mobile.png)
 
-Распакуйте ZIP и откройте `ga-checkpoint-new.html` в браузере. Изображения, стили, шрифт и JavaScript встроены; для демонстрационного каталога интернет не нужен. Если скачивание не начинается, откройте ZIP в репозитории и нажмите **Download raw file**.
+Распакуйте ZIP и откройте единственный HTML внутри — `index.html` — в браузере. Изображения, стили, шрифт и JavaScript встроены; для демонстрационного каталога интернет не нужен. Если скачивание не начинается, откройте ZIP в репозитории и нажмите **Download raw file**. Все публичные файлы `index.html`, включая `new-store/index.html`, теперь автономны и работают после отдельного скачивания. Редактируемый шаблон хранится отдельно как `new-store/template.html.in`.
 
 Полностью новая реализация, без прежнего GA HTML. Цвета оформлены под GA Checkpoint: фирменный синий с красными акцентами, белые поверхности и графитовый текст.
 
