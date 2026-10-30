@@ -106,11 +106,14 @@ main>.section.catalog,main>.section.secondary-collection{width:100%;margin-inlin
 @media(max-width:650px){main>.section{padding-inline:18px}main>.section.catalog,main>.section.secondary-collection{padding-inline:10px}}
 
 /* Compact top strip and a thin navigation header. */
-:root{--header-height:56px;--announcement-height:20px}
+:root{--header-height:42px;--announcement-height:16px}
 html{scroll-padding-top:calc(var(--header-height) + 8px)}
-.announcement{height:var(--announcement-height);min-height:var(--announcement-height);padding:2px 36px;font-size:8px;line-height:1.2}
-.site-header{height:var(--header-height);min-height:var(--header-height);padding:4px 30px;gap:20px}
+body{padding-top:var(--header-height)}
+.announcement{height:var(--announcement-height);min-height:var(--announcement-height);padding:2px 24px;font-size:7px;line-height:1.2}
+.site-header{position:fixed;top:0;right:0;left:0;width:100%;height:var(--header-height);min-height:var(--header-height);padding:3px 24px;gap:20px}
 .site-header .wordmark{font-size:18px;line-height:.88}
+.site-header .brand-logo{display:flex;align-items:center;height:34px;line-height:1;letter-spacing:0}
+.site-header .brand-logo img{display:block;width:auto;max-width:none;height:34px;object-fit:contain}
 .site-header .logo-cross .star-svg{width:17px;height:17px}
 .desktop-nav{gap:26px}
 .desktop-nav button{min-height:32px;font-size:11px;font-weight:500;line-height:1.2}
@@ -121,8 +124,8 @@ html{scroll-padding-top:calc(var(--header-height) + 8px)}
 .catalog{scroll-margin-top:0}
 @media(max-width:1100px){.announcement{padding-inline:25px}.site-header{padding-inline:25px}.desktop-nav{gap:22px}}
 @media(max-width:800px){.desktop-nav{gap:17px}.desktop-nav button{font-size:10px}.site-header{gap:16px}}
-@media(max-width:650px){:root{--header-height:54px;--announcement-height:18px}.announcement{padding:2px 16px;font-size:7px}.site-header{padding:4px 18px;gap:10px}.site-header .wordmark{font-size:17px}.site-header .logo-cross .star-svg{width:16px;height:16px}.site-header .icon-button{width:32px;height:34px}.header-actions{gap:5px}}
-@media(max-width:370px){.site-header{padding-inline:15px}.header-actions{gap:2px}}
+@media(max-width:650px){:root{--header-height:44px;--announcement-height:14px}.announcement{padding:2px 12px;font-size:6px}.site-header{padding:4px 12px;gap:8px}.site-header .wordmark{font-size:17px}.site-header .logo-cross .star-svg{width:16px;height:16px}.site-header .icon-button{width:32px;height:34px}.header-actions{gap:3px}}
+@media(max-width:370px){.site-header{padding-inline:10px}.header-actions{gap:1px}}
 @media(prefers-reduced-motion:reduce){.hero.hero-carousel{top:auto}}
 
 /* Reveal the ticker and the complete catalog introduction before the product cards. */
@@ -153,7 +156,7 @@ html{scroll-padding-top:calc(var(--header-height) + 8px)}
 html{scroll-behavior:auto;scroll-padding-top:var(--header-height)}
 .scroll-scene{width:100%;max-width:none;margin:0}
 #scene-1{height:calc(100svh - var(--header-height) - var(--announcement-height));position:relative}
-#scene-1 .hero.hero-carousel{position:relative;top:auto;width:100%;height:100%;min-height:0;max-height:none}
+#scene-1 .hero.hero-carousel{position:relative;top:auto;width:100%;height:100%;min-height:0;max-height:none;margin:0;padding:0;border:0;border-radius:0}
 #scene-2{position:relative;z-index:2;display:grid;grid-template-rows:28px minmax(0,1fr) 30%;height:calc(100svh - var(--header-height));overflow:clip;background:#fff}
 #scene-2>.ticker{min-height:0;height:28px;padding:4px 0;border-bottom:1px solid var(--line)}
 #scene-2>.ticker>div{height:19px;gap:45px}.scene-two .ticker span{font-size:11px;letter-spacing:0}.scene-two .ticker .star-svg{width:14px;height:14px}

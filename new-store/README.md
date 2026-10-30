@@ -1,6 +1,6 @@
 # GA Checkpoint — independent marine storefront
 
-A new HTML/CSS/JavaScript implementation built from scratch, with Attitude as the initial visual direction and GA Checkpoint-inspired blue, red, white and graphite branding. The earlier GA HTML, catalog data and scripts are not reused.
+A new HTML/CSS/JavaScript implementation built from scratch, with Attitude as the initial visual direction and GA Checkpoint blue, red, white and graphite branding. The original logo artwork is embedded in the header; the earlier GA layout, catalog data and scripts are not reused.
 
 Open `ga-checkpoint-new.html` from the downloadable ZIP in a browser. Images, styles, both JavaScript files and the Archivo font are embedded; the demonstration store makes no external requests.
 
@@ -16,7 +16,7 @@ The first screen's photos and dark overlay also fade out together as the page mo
 
 Touch swipes, Page Up/Down, arrow keys and section navigation are supported. Form inputs, zoom gestures, horizontal product scrolling and open dialogs retain their own interactions. On extremely short windows, the compact product pane can scroll internally to keep controls reachable. The banner and scene anchors remain stable when filters change.
 
-The header is 56px high with a 20px top strip on desktop, and 54px with an 18px strip on mobile. Shared variables align screen heights and navigation offsets. Motion preferences disable animated transitions and start the image carousel paused.
+The fixed header stays at the top throughout the page: 42px high on desktop and 44px on mobile. A separate 16px strip (14px on mobile) scrolls away. The original GA Checkpoint logo retains its blue gear, red accents and tagline. The hero fills all remaining first-screen space with no margins, borders or image padding. Shared variables align screen heights and navigation offsets. Motion preferences disable animated transitions and start the image carousel paused.
 
 ## Demo catalog and source
 
