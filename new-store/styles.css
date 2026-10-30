@@ -128,6 +128,19 @@ body{padding-top:var(--header-height)}
 @media(max-width:370px){.site-header{padding-inline:10px}.header-actions{gap:1px}}
 @media(prefers-reduced-motion:reduce){.hero.hero-carousel{top:auto}}
 
+/* Center the category group independently of the logo and shopping controls. */
+.site-header{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)}
+.site-header .brand-logo{grid-column:1;justify-self:start}
+.site-header .desktop-nav{grid-column:2;justify-self:center;display:flex;align-items:center;justify-content:center;gap:clamp(20px,2vw,30px);min-width:0;margin:0}
+.site-header .header-actions{grid-column:3;justify-self:end}
+.site-header .desktop-nav button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:34px;font-family:var(--display);font-size:18px;font-weight:800;font-stretch:85%;letter-spacing:-.025em;line-height:1;white-space:nowrap}
+.category-compass{display:block;flex-shrink:0;width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.35}
+.menu-dialog nav .menu-category-label{display:inline-flex;align-items:center;justify-content:flex-start;gap:12px;font:inherit;letter-spacing:inherit}
+.menu-dialog nav .category-compass{width:22px;height:22px}
+.menu-dialog nav [data-category]{font-family:var(--display);font-weight:800;font-stretch:85%;letter-spacing:-.025em}
+@media(max-width:920px){.site-header{grid-template-columns:auto minmax(0,1fr)}.site-header .desktop-nav{display:none}.site-header .header-actions{grid-column:2}.site-header .menu-button{display:grid}}
+@media(max-width:350px){.site-header .brand-logo,.site-header .brand-logo img{height:30px}}
+
 /* Reveal the ticker and the complete catalog introduction before the product cards. */
 .catalog-intro.scroll-reveal-shell{overflow:clip}
 .scroll-reveal-shell>[data-reveal-content]{opacity:var(--section-reveal-opacity,0);transform:translate3d(0,var(--section-reveal-shift,65px),0);transition:opacity .2s ease-out,transform .26s ease-out;will-change:opacity,transform}
@@ -152,7 +165,7 @@ body{padding-top:var(--header-height)}
 .approach{background:var(--ink)}.approach h2{color:#fff}.compass-mark{color:var(--brand-red)}
 .site-footer{background:var(--ink);color:#fff}.footer-bottom{border-color:#ffffff30}.footer-disclaimer{color:#bdc6d5}.footer-wordmark span{color:var(--brand-red)}
 
-/* Four scrolling stages: hero, categories, products and banner, then more gear. */
+/* Five scrolling stages: hero, categories, two product screens and useful advice. */
 html{scroll-behavior:auto;scroll-padding-top:var(--header-height)}
 .scroll-scene{width:100%;max-width:none;margin:0}
 #scene-1{height:calc(100svh - var(--header-height) - var(--announcement-height));position:relative}
@@ -240,6 +253,25 @@ html{scroll-behavior:auto;scroll-padding-top:var(--header-height)}
 @media(max-height:700px){#scene-4 .secondary-collection{padding-top:12px}#scene-4 .secondary-collection>.section-heading{margin-bottom:12px}#scene-4 .section-heading h2{font-size:25px}#scene-4 .product-grid{--scene-image-height:clamp(95px,calc(100svh - 530px),180px)}#scene-4 .product-meta{margin-top:5px}#scene-4 .product-card h3{min-height:24px;margin-block:4px}#scene-4 .approach-title h2{font-size:32px}}
 @media(max-width:650px){#scene-4 .approach-banner{grid-template-columns:minmax(112px,.9fr) minmax(0,1.1fr)}#scene-4 .approach-title h2{font-size:clamp(24px,6.5vw,27px)}}
 @media(max-height:520px){#scene-4>.scene-panel{grid-template-rows:minmax(0,1fr) minmax(170px,30%)}#scene-4 .secondary-pane{overflow-y:auto;overscroll-behavior:contain}#scene-4 .product-grid{--scene-image-height:68px}#scene-4 .approach-banner{padding-block:10px}#scene-4 .approach-copy>p{font-size:10px}#scene-4 .approach-copy>p+p{font-size:10px}}
+
+/* A complete fifth screen, followed by native scrolling into the footer. */
+#scene-5{position:relative;z-index:2;width:100%;height:calc(100svh - var(--header-height));min-height:0;overflow:clip;background:var(--paper)}
+#scene-5>.field-notes-panel{display:flex;width:100%;max-width:none;height:100%;min-height:0;flex-direction:column;justify-content:center;margin:0;padding:clamp(30px,7svh,72px) clamp(18px,3vw,48px);background:var(--paper)}
+#scene-5 .field-notes-panel>.eyebrow{margin:0 0 18px;font-size:8px}
+#scene-5 .notes-heading{align-items:flex-end;gap:24px;margin:0 0 clamp(28px,5svh,48px)}
+#scene-5 .notes-heading h2{font-size:clamp(40px,4.4vw,66px);line-height:.95}
+#scene-5 .notes-heading>p{font-size:12px;line-height:1.5}
+#scene-5 .notes-grid{grid-template-columns:repeat(3,minmax(0,1fr));min-height:clamp(240px,40svh,400px);border-top:1px solid var(--line)}
+#scene-5 .notes-grid article{display:flex;min-width:0;flex-direction:column;align-items:flex-start;justify-content:center;padding:28px}
+#scene-5 .notes-grid article:first-child{padding-left:0}
+#scene-5 .notes-grid article:last-child{padding-right:0}
+#scene-5 .note-number{font-size:9px}
+#scene-5 .notes-grid h3{margin:24px 0 14px;font-size:clamp(25px,2.3vw,36px)}
+#scene-5 .notes-grid p{min-height:0;margin:0 0 24px;font-size:12px;line-height:1.65}
+#scene-5 .notes-grid .text-button{min-height:30px;font-size:11px}
+@media(max-width:900px){#scene-5 .notes-grid article{padding-inline:20px}#scene-5 .notes-grid p{font-size:11px}#scene-5 .notes-heading>p{max-width:170px;font-size:11px}}
+@media(max-width:650px){#scene-5>.field-notes-panel{justify-content:flex-start;padding:22px 16px}#scene-5 .field-notes-panel>.eyebrow{margin-bottom:12px;font-size:7px}#scene-5 .notes-heading{align-items:flex-start;flex-direction:column;flex-shrink:0;gap:8px;margin-bottom:16px}#scene-5 .notes-heading h2{font-size:clamp(30px,8.8vw,36px)}#scene-5 .notes-heading>p{max-width:none;margin:0;font-size:10px}#scene-5 .notes-grid{flex:1;grid-template-columns:minmax(0,1fr);grid-template-rows:repeat(3,minmax(0,1fr));min-height:0}#scene-5 .notes-grid article,#scene-5 .notes-grid article:first-child,#scene-5 .notes-grid article:last-child{position:relative;min-height:0;padding:14px 0 14px 36px;border-left:0;border-bottom:1px solid var(--line)}#scene-5 .notes-grid article:last-child{border-bottom:0}#scene-5 .note-number{position:absolute;left:0;top:20px;font-size:8px}#scene-5 .notes-grid h3{margin:0 0 8px;font-size:25px}#scene-5 .notes-grid p{margin:0 0 10px;font-size:10px;line-height:1.5}#scene-5 .notes-grid .text-button{min-height:24px;font-size:10px}}
+@media(max-height:600px) and (min-width:651px){#scene-5>.field-notes-panel{padding-block:24px}#scene-5 .notes-heading{margin-bottom:20px}#scene-5 .notes-grid{min-height:0}#scene-5 .notes-grid article{padding-block:18px}#scene-5 .notes-grid h3{margin-top:14px}#scene-5 .notes-grid p{margin-bottom:16px}}
 .scene-navigation{position:fixed;z-index:30;top:50%;right:7px;display:flex;flex-direction:column;gap:5px;transform:translateY(-50%)}
 .scene-navigation button{display:grid;width:23px;height:24px;place-items:center;padding:0;border:1px solid #dfe5f0;background:#ffffffed;color:#626e80;font-size:8px;font-weight:700}
 .scene-navigation button[aria-current=step]{border-color:var(--accent);background:var(--accent);color:#fff}

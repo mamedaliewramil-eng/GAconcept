@@ -1,6 +1,6 @@
 'use strict';
 
-// Advance through hero, categories and featured gear; scroll freely after entering scene four.
+// Advance through all five screens; further scrolling continues freely toward the footer.
 (() => {
   const scenes = [...document.querySelectorAll('main > .scroll-scene')];
   const lastScene = scenes.length - 1;
@@ -281,7 +281,7 @@
   });
 
   function sceneIndex(target) {
-    const targets = [['#home','#scene-1'],['#collections','#scene-2'],['#catalog','#scene-3'],['#scene-4']];
+    const targets = [['#home','#scene-1'],['#collections','#scene-2'],['#catalog','#scene-3'],['#scene-4'],['#scene-5']];
     const index = targets.findIndex(group => group.includes(target));
     return index < 0 ? null : index;
   }
