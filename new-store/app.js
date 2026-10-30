@@ -270,6 +270,20 @@ function scheduleCardReveal() {
 function updateCardReveal() {
   revealFrame = 0;
   const viewport = window.innerHeight;
+  $$('[data-scroll-reveal]').forEach(group => {
+    if (group.classList.contains('is-revealed') || group.closest('[hidden]')) return;
+    const top = group.getBoundingClientRect().top;
+    const next = reducedMotion() ? 1 : Math.max(0,Math.min(1,(viewport - 18 - top) / Math.max(180,viewport * .22)));
+    const progress = Math.max(Number(group.dataset.revealProgress || 0),next);
+    group.dataset.revealProgress = String(progress);
+    group.style.setProperty('--section-reveal-opacity',String(progress));
+    group.style.setProperty('--section-reveal-shift',`${Math.round((1 - progress) * 65)}px`);
+    if (progress >= .995) {
+      group.classList.add('is-revealed');
+      group.style.setProperty('--section-reveal-opacity','1');
+      group.style.setProperty('--section-reveal-shift','0px');
+    }
+  });
   $$('.product-rail').forEach(rail => {
     if (rail.closest('[hidden]')) return;
     const rect = rail.getBoundingClientRect();

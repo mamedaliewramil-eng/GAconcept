@@ -114,6 +114,33 @@ main>.section.catalog,main>.section.secondary-collection{width:100%;margin-inlin
 @media(max-width:1100px){main>.section{padding-inline:25px}main>.section.catalog,main>.section.secondary-collection{padding-inline:14px}}
 @media(max-width:650px){main>.section{padding-inline:18px}main>.section.catalog,main>.section.secondary-collection{padding-inline:10px}}
 
+/* Compact top strip and a thin navigation header. */
+:root{--header-height:56px;--announcement-height:20px}
+html{scroll-padding-top:calc(var(--header-height) + 8px)}
+.announcement{height:var(--announcement-height);min-height:var(--announcement-height);padding:2px 36px;font-size:8px;line-height:1.2}
+.site-header{height:var(--header-height);min-height:var(--header-height);padding:4px 30px;gap:20px}
+.site-header .wordmark{font-size:18px;line-height:.88}
+.site-header .logo-cross .star-svg{width:17px;height:17px}
+.desktop-nav{gap:26px}
+.desktop-nav button{min-height:32px;font-size:11px;font-weight:500;line-height:1.2}
+.desktop-nav button:after{height:1px;bottom:1px}
+.site-header .icon-button{width:34px;height:34px;padding:7px}
+.site-header .bag-button{min-height:34px;font-size:10px;font-weight:500}
+.hero.hero-carousel{height:calc(100svh - var(--header-height) - var(--announcement-height));top:var(--header-height)}
+.catalog{scroll-margin-top:0}
+@media(max-width:1100px){.announcement{padding-inline:25px}.site-header{padding-inline:25px}.desktop-nav{gap:22px}}
+@media(max-width:800px){.desktop-nav{gap:17px}.desktop-nav button{font-size:10px}.site-header{gap:16px}}
+@media(max-width:650px){:root{--header-height:54px;--announcement-height:18px}.announcement{padding:2px 16px;font-size:7px}.site-header{padding:4px 18px;gap:10px}.site-header .wordmark{font-size:17px}.site-header .logo-cross .star-svg{width:16px;height:16px}.site-header .icon-button{width:32px;height:34px}.header-actions{gap:5px}}
+@media(max-width:370px){.site-header{padding-inline:15px}.header-actions{gap:2px}}
+@media(prefers-reduced-motion:reduce){.hero.hero-carousel{top:auto}}
+
+/* Reveal the ticker and the complete catalog introduction before the product cards. */
+.catalog-intro.scroll-reveal-shell{overflow:clip}
+.scroll-reveal-shell>[data-reveal-content]{opacity:var(--section-reveal-opacity,0);transform:translate3d(0,var(--section-reveal-shift,65px),0);transition:opacity .2s ease-out,transform .26s ease-out;will-change:opacity,transform}
+.scroll-reveal-shell.is-revealed>[data-reveal-content]{will-change:auto}
+.scroll-reveal-shell:focus-within>[data-reveal-content]{opacity:1;transform:none;transition:none}
+@media(prefers-reduced-motion:reduce){.scroll-reveal-shell>[data-reveal-content]{opacity:1;transform:none;transition:none;will-change:auto}}
+
 </style>
 </head>
 <body>
@@ -152,15 +179,17 @@ main>.section.catalog,main>.section.secondary-collection{width:100%;margin-inlin
       <div class="hero-bottom"><a class="hero-scroll" href="#catalog">SCROLL TO FIND YOUR GEAR <svg class="arrow-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v16m-6-6 6 6 6-6"/></svg></a><div class="hero-slider-controls"><div class="slide-selectors" role="group" aria-label="Choose a hero image"><button type="button" class="slide-selector" data-slide="0" aria-label="Show image 1 of 3" aria-pressed="true">01<span class="slide-line" aria-hidden="true"></span></button><button type="button" class="slide-selector" data-slide="1" aria-label="Show image 2 of 3" aria-pressed="false">02<span class="slide-line" aria-hidden="true"></span></button><button type="button" class="slide-selector" data-slide="2" aria-label="Show image 3 of 3" aria-pressed="false">03<span class="slide-line" aria-hidden="true"></span></button></div><button class="hero-pause" id="hero-pause" type="button" aria-label="Pause automatic image rotation" aria-pressed="false"><svg class="pause-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5v14M15 5v14"/></svg><svg class="play-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7Z"/></svg></button></div></div>
     </section>
 
-    <div class="ticker" aria-label="Explore without limits"><div><span>FIND YOUR CURRENT</span><span class="ticker-cross" aria-hidden="true"><svg class="star-svg" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2v28M2 16h28M6.1 6.1l19.8 19.8M6.1 25.9 25.9 6.1"/></svg></span><span>TAKE THE LONG WAY</span><span class="ticker-cross" aria-hidden="true"><svg class="star-svg" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2v28M2 16h28M6.1 6.1l19.8 19.8M6.1 25.9 25.9 6.1"/></svg></span><span>MAKE WAVES</span><span class="ticker-cross" aria-hidden="true"><svg class="star-svg" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2v28M2 16h28M6.1 6.1l19.8 19.8M6.1 25.9 25.9 6.1"/></svg></span><span aria-hidden="true">FIND YOUR CURRENT</span><span class="ticker-cross" aria-hidden="true"><svg class="star-svg" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2v28M2 16h28M6.1 6.1l19.8 19.8M6.1 25.9 25.9 6.1"/></svg></span></div></div>
+    <div class="ticker scroll-reveal-shell" data-scroll-reveal aria-label="Explore without limits"><div data-reveal-content><span>FIND YOUR CURRENT</span><span class="ticker-cross" aria-hidden="true"><svg class="star-svg" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2v28M2 16h28M6.1 6.1l19.8 19.8M6.1 25.9 25.9 6.1"/></svg></span><span>TAKE THE LONG WAY</span><span class="ticker-cross" aria-hidden="true"><svg class="star-svg" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2v28M2 16h28M6.1 6.1l19.8 19.8M6.1 25.9 25.9 6.1"/></svg></span><span>MAKE WAVES</span><span class="ticker-cross" aria-hidden="true"><svg class="star-svg" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2v28M2 16h28M6.1 6.1l19.8 19.8M6.1 25.9 25.9 6.1"/></svg></span><span aria-hidden="true">FIND YOUR CURRENT</span><span class="ticker-cross" aria-hidden="true"><svg class="star-svg" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2v28M2 16h28M6.1 6.1l19.8 19.8M6.1 25.9 25.9 6.1"/></svg></span></div></div>
 
     <section class="section catalog" id="catalog" aria-labelledby="catalog-title">
+      <div class="catalog-intro scroll-reveal-shell" data-scroll-reveal><div data-reveal-content>
       <div class="section-heading"><div><p class="eyebrow">CURATED FOR YOUR NEXT CHAPTER</p><h2 id="catalog-title">GOOD TO GO.</h2></div><p class="concept-note"><span></span>Concept collection<br> Sample products &amp; prices in CAD.</p></div>
       <div class="catalog-top">
         <div class="category-tabs" role="group" aria-label="Filter collection by category"><button type="button" class="active" data-category="all" aria-pressed="true">All gear <span>12</span></button><button type="button" data-category="boats" aria-pressed="false">Boats</button><button type="button" data-category="electronics" aria-pressed="false">Electronics</button><button type="button" data-category="essentials" aria-pressed="false">Essentials</button></div>
         <label class="search-box"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/></svg><span class="sr-only">Search products</span><input type="search" id="catalog-search" placeholder="Search your next adventure" autocomplete="off"></label>
       </div>
       <div class="catalog-toolbar"><div class="toolbar-left"><button class="filter-button" id="filter-toggle" type="button" aria-haspopup="dialog"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 17h16M8 4v6M16 14v6"/></svg>Filter <span id="filter-count" hidden></span></button><p id="result-count" role="status" aria-live="polite">12 items</p><button id="clear-filters" class="clear-button" type="button" hidden>Clear all</button></div><label class="sort-label">Sort by <select id="sort-by"><option value="featured">Featured</option><option value="price-asc">Price: low to high</option><option value="price-desc">Price: high to low</option><option value="name">Name: A–Z</option></select></label></div>
+      </div></div>
       <div class="product-grid product-rail" id="product-grid" tabindex="0" role="region" aria-label="Featured product row"></div><div class="row-navigation"><span>YOUR NEXT GOOD FIND IS RIGHT HERE.</span><div><button type="button" data-rail="product-grid" data-direction="-1" aria-label="Scroll featured products left"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12H4m6-6-6 6 6 6"/></svg></button><button type="button" data-rail="product-grid" data-direction="1" aria-label="Scroll featured products right"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></button></div></div>
       <div class="empty-state" id="empty-state" hidden><span aria-hidden="true"><svg class="arrow-svg up-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></span><h3>ANOTHER WAY OUT.</h3><p id="empty-message">Try a different search or clear your filters.</p><button class="button button-dark" id="empty-reset" type="button">Show all gear</button></div>
       <noscript><p class="noscript-message">The shopping controls need JavaScript. Enable it to explore this concept collection.</p></noscript>
@@ -470,6 +499,20 @@ function scheduleCardReveal() {
 function updateCardReveal() {
   revealFrame = 0;
   const viewport = window.innerHeight;
+  $$('[data-scroll-reveal]').forEach(group => {
+    if (group.classList.contains('is-revealed') || group.closest('[hidden]')) return;
+    const top = group.getBoundingClientRect().top;
+    const next = reducedMotion() ? 1 : Math.max(0,Math.min(1,(viewport - 18 - top) / Math.max(180,viewport * .22)));
+    const progress = Math.max(Number(group.dataset.revealProgress || 0),next);
+    group.dataset.revealProgress = String(progress);
+    group.style.setProperty('--section-reveal-opacity',String(progress));
+    group.style.setProperty('--section-reveal-shift',`${Math.round((1 - progress) * 65)}px`);
+    if (progress >= .995) {
+      group.classList.add('is-revealed');
+      group.style.setProperty('--section-reveal-opacity','1');
+      group.style.setProperty('--section-reveal-shift','0px');
+    }
+  });
   $$('.product-rail').forEach(rail => {
     if (rail.closest('[hidden]')) return;
     const rect = rail.getBoundingClientRect();

@@ -8,6 +8,10 @@ The concept collection contains twelve original sample products. Names, specific
 
 Layout: an edge-to-edge hero with three full-cover images, smooth crossfades every 15 seconds, manual slide controls and pause; a nearly edge-to-edge six-product row; a shorter full-width photographic banner; and a second six-product row. The hero stays behind the page as the next section rises over its bottom edge. Cards move up and fade in progressively with downward scrolling, with a slight stagger. Smaller screens keep the product rows horizontally scrollable. Reduced motion disables the pinning and card motion. The carousel pauses when the page is hidden and starts paused for reduced-motion preferences.
 
+The navigation header is compact: 56px high with a 20px top strip on desktop, and 54px with an 18px strip on mobile. Shared CSS variables keep hero sizing, sticky positioning and anchor offsets aligned with these heights.
+
+The ticker and entire catalog introduction (heading, category controls, search and filter toolbar) also rise and fade in progressively on scroll, before the product cards. Their outer layout stays stable, and keyboard focus reveals controls immediately.
+
 Features: responsive navigation, category browsing, full-text search, price/category filtering, sorting, saved products, product detail dialogs, quantity controls, a persistent demonstration bag and a clearly labeled bag review. Dialogs support Escape and keyboard navigation. Reduced motion preferences are respected.
 
 Editable source is in this directory: `index.html`, `styles.css`, `app.js`, and `assets/`. Run `python3 build.py` here to regenerate the standalone HTML and ZIP in the parent directory.

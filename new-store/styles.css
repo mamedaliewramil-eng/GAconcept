@@ -104,3 +104,30 @@ main>.section{width:100%;max-width:none;margin-inline:0;padding-inline:36px}
 main>.section.catalog,main>.section.secondary-collection{width:100%;margin-inline:0;padding-inline:14px}
 @media(max-width:1100px){main>.section{padding-inline:25px}main>.section.catalog,main>.section.secondary-collection{padding-inline:14px}}
 @media(max-width:650px){main>.section{padding-inline:18px}main>.section.catalog,main>.section.secondary-collection{padding-inline:10px}}
+
+/* Compact top strip and a thin navigation header. */
+:root{--header-height:56px;--announcement-height:20px}
+html{scroll-padding-top:calc(var(--header-height) + 8px)}
+.announcement{height:var(--announcement-height);min-height:var(--announcement-height);padding:2px 36px;font-size:8px;line-height:1.2}
+.site-header{height:var(--header-height);min-height:var(--header-height);padding:4px 30px;gap:20px}
+.site-header .wordmark{font-size:18px;line-height:.88}
+.site-header .logo-cross .star-svg{width:17px;height:17px}
+.desktop-nav{gap:26px}
+.desktop-nav button{min-height:32px;font-size:11px;font-weight:500;line-height:1.2}
+.desktop-nav button:after{height:1px;bottom:1px}
+.site-header .icon-button{width:34px;height:34px;padding:7px}
+.site-header .bag-button{min-height:34px;font-size:10px;font-weight:500}
+.hero.hero-carousel{height:calc(100svh - var(--header-height) - var(--announcement-height));top:var(--header-height)}
+.catalog{scroll-margin-top:0}
+@media(max-width:1100px){.announcement{padding-inline:25px}.site-header{padding-inline:25px}.desktop-nav{gap:22px}}
+@media(max-width:800px){.desktop-nav{gap:17px}.desktop-nav button{font-size:10px}.site-header{gap:16px}}
+@media(max-width:650px){:root{--header-height:54px;--announcement-height:18px}.announcement{padding:2px 16px;font-size:7px}.site-header{padding:4px 18px;gap:10px}.site-header .wordmark{font-size:17px}.site-header .logo-cross .star-svg{width:16px;height:16px}.site-header .icon-button{width:32px;height:34px}.header-actions{gap:5px}}
+@media(max-width:370px){.site-header{padding-inline:15px}.header-actions{gap:2px}}
+@media(prefers-reduced-motion:reduce){.hero.hero-carousel{top:auto}}
+
+/* Reveal the ticker and the complete catalog introduction before the product cards. */
+.catalog-intro.scroll-reveal-shell{overflow:clip}
+.scroll-reveal-shell>[data-reveal-content]{opacity:var(--section-reveal-opacity,0);transform:translate3d(0,var(--section-reveal-shift,65px),0);transition:opacity .2s ease-out,transform .26s ease-out;will-change:opacity,transform}
+.scroll-reveal-shell.is-revealed>[data-reveal-content]{will-change:auto}
+.scroll-reveal-shell:focus-within>[data-reveal-content]{opacity:1;transform:none;transition:none}
+@media(prefers-reduced-motion:reduce){.scroll-reveal-shell>[data-reveal-content]{opacity:1;transform:none;transition:none;will-change:auto}}
