@@ -208,6 +208,47 @@ html{scroll-behavior:auto;scroll-padding-top:var(--header-height)}
 #scene-4{position:relative;z-index:2;min-height:calc(100svh - var(--header-height));background:#fff}
 #scene-4>.section{width:100%;max-width:none;margin-inline:0;padding-inline:36px}
 #scene-4>.section.secondary-collection{padding-inline:14px}
+/* Keep the second product row and its complete mini banner together in one screen. */
+#scene-4{height:calc(100svh - var(--header-height));min-height:0;overflow:clip}
+#scene-4>.scene-panel{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) 30%;width:100%;height:100%;min-width:0;min-height:0;background:#fff}
+#scene-4 .secondary-pane{display:grid;min-width:0;min-height:0}
+#scene-4 .secondary-collection{display:flex;width:100%;max-width:none;min-width:0;min-height:0;flex-direction:column;justify-content:flex-start;margin:0;padding:clamp(18px,4svh,40px) 14px 10px;background:#fff}
+#scene-4 .secondary-collection>.section-heading{flex-shrink:0;align-items:flex-end;gap:20px;margin:0 4px 18px;padding:0}
+#scene-4 .section-heading .eyebrow{margin:0 0 8px;font-size:7px}
+#scene-4 .section-heading h2{font-size:clamp(25px,3.8svh,38px);line-height:.95}
+#scene-4 .secondary-intro{font-size:10px;line-height:1.5}
+#scene-4 .product-grid{flex-shrink:0;overflow-y:hidden;padding:0;--scene-image-height:clamp(105px,calc(100svh - 540px),300px)}
+#scene-4 .product-media{height:var(--scene-image-height);aspect-ratio:auto}
+#scene-4 .product-media .product-photo{position:absolute;top:50%;left:50%;width:min(100%,var(--scene-image-height));height:auto;aspect-ratio:1;transform:translate(-50%,-50%)}
+#scene-4 .product-meta{margin-top:8px;font-size:7px;line-height:1.2}
+#scene-4 .product-meta span:last-child{font-size:7px}
+#scene-4 .product-card h3{min-height:27px;margin:6px 0;font-size:11px;line-height:1.25}
+#scene-4 .product-bottom{gap:6px}
+#scene-4 .price{min-height:14px;font-size:11px;line-height:1.2}
+#scene-4 .product-rail .add-button{min-height:30px;margin:0;padding-inline:10px;font-size:9px}
+#scene-4 .product-tag{top:7px;left:7px;min-height:18px;padding-inline:5px;font-size:6px}
+#scene-4 .save-button{top:4px;right:4px;width:28px;height:28px;padding:7px}
+#scene-4 .save-button svg{width:14px;height:14px}
+#scene-4 .row-navigation{display:none}
+#scene-4 .secondary-empty{align-self:center;justify-self:center;max-width:480px;padding:20px;text-align:center}
+#scene-4 .secondary-empty h2{margin:10px 0;font-family:var(--display);font-size:36px;letter-spacing:-.05em}
+#scene-4 .secondary-empty>p:not(.eyebrow){margin-bottom:22px;color:var(--muted);font-size:12px;line-height:1.6}
+#scene-4 .approach-banner{position:relative;isolation:isolate;display:grid;grid-template-columns:minmax(210px,.8fr) minmax(0,1.3fr) auto;align-items:center;gap:clamp(24px,4vw,64px);width:100%;height:100%;min-width:0;min-height:0;overflow:hidden;padding:22px clamp(24px,4vw,60px);background:var(--ink);color:#fff}
+#scene-4 .approach-banner-photo{position:absolute;z-index:-3;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 55%}
+#scene-4 .approach-banner-shade{position:absolute;z-index:-2;inset:0;background:linear-gradient(90deg,#151922ed,#151922c9 60%,#15192280)}
+#scene-4 .approach-title .eyebrow{margin:0 0 10px;color:#c5d2ec;font-size:7px;line-height:1.3}
+#scene-4 .approach-title h2{font-size:clamp(34px,4.5svh,52px);line-height:.92;letter-spacing:-.05em}
+#scene-4 .approach-copy{display:block;max-width:530px;padding:0}
+#scene-4 .approach-copy>p{max-width:none;margin:0;color:#f0f3f9;font-size:11px;line-height:1.6}
+#scene-4 .approach-copy>p+p{margin-top:10px;color:#c3cedf;font-size:10px;line-height:1.6}
+#scene-4 .approach-button{justify-self:end;min-height:38px;gap:24px;padding:10px 16px;border-color:#ffffff50;font-size:9px}
+#scene-4 .compass-mark{display:grid;place-items:center;top:auto;right:18px;bottom:16px;width:24px;height:24px;font-size:0;line-height:0}
+#scene-4 .compass-mark .star-svg{width:24px;height:24px}
+@media(max-width:1000px){#scene-4 .approach-banner{grid-template-columns:minmax(175px,.8fr) minmax(0,1.3fr);grid-template-rows:auto auto;align-content:center;gap:12px 30px;padding:18px 26px}#scene-4 .approach-title{grid-column:1;grid-row:1}#scene-4 .approach-copy{grid-column:2;grid-row:1/3}#scene-4 .approach-button{grid-column:1;grid-row:2;justify-self:start}#scene-4 .approach-title h2{font-size:38px}#scene-4 .compass-mark{width:18px;height:18px;right:10px;bottom:10px}#scene-4 .compass-mark .star-svg{width:18px;height:18px}}
+@media(max-width:650px){#scene-4 .secondary-collection{padding:18px 10px 8px}#scene-4 .secondary-collection>.section-heading{align-items:flex-end;flex-direction:row;gap:16px;margin:0 4px 14px}#scene-4 .section-heading h2{font-size:26px}#scene-4 .section-heading .eyebrow{margin-bottom:7px;font-size:6px}#scene-4 .secondary-intro{max-width:105px;font-size:8px}#scene-4 .product-grid{--scene-image-height:clamp(105px,calc(100svh - 530px),225px)}#scene-4 .product-bottom{flex-direction:column;align-items:stretch}#scene-4 .product-rail .add-button{width:100%}#scene-4 .approach-banner{grid-template-columns:minmax(112px,.78fr) minmax(0,1.22fr);gap:10px 14px;padding:14px 16px}#scene-4 .approach-title .eyebrow{margin-bottom:8px;font-size:6px}#scene-4 .approach-title h2{font-size:clamp(27px,7.5vw,33px)}#scene-4 .approach-copy>p{font-size:9px;line-height:1.45}#scene-4 .approach-copy>p+p{margin-top:8px;font-size:9px;line-height:1.45}#scene-4 .approach-button{min-height:32px;gap:12px;padding:8px 10px;font-size:8px}#scene-4 .approach-button svg{width:14px;height:14px}#scene-4 .compass-mark{right:6px;bottom:6px;width:12px;height:12px}#scene-4 .compass-mark .star-svg{width:12px;height:12px}#scene-4 .secondary-empty h2{font-size:28px}}
+@media(max-height:700px){#scene-4 .secondary-collection{padding-top:12px}#scene-4 .secondary-collection>.section-heading{margin-bottom:12px}#scene-4 .section-heading h2{font-size:25px}#scene-4 .product-grid{--scene-image-height:clamp(95px,calc(100svh - 530px),180px)}#scene-4 .product-meta{margin-top:5px}#scene-4 .product-card h3{min-height:24px;margin-block:4px}#scene-4 .approach-title h2{font-size:32px}}
+@media(max-width:650px){#scene-4 .approach-banner{grid-template-columns:minmax(112px,.9fr) minmax(0,1.1fr)}#scene-4 .approach-title h2{font-size:clamp(24px,6.5vw,27px)}}
+@media(max-height:520px){#scene-4>.scene-panel{grid-template-rows:minmax(0,1fr) minmax(170px,30%)}#scene-4 .secondary-pane{overflow-y:auto;overscroll-behavior:contain}#scene-4 .product-grid{--scene-image-height:68px}#scene-4 .approach-banner{padding-block:10px}#scene-4 .approach-copy>p{font-size:10px}#scene-4 .approach-copy>p+p{font-size:10px}}
 .scene-navigation{position:fixed;z-index:30;top:50%;right:7px;display:flex;flex-direction:column;gap:5px;transform:translateY(-50%)}
 .scene-navigation button{display:grid;width:23px;height:24px;place-items:center;padding:0;border:1px solid #dfe5f0;background:#ffffffed;color:#626e80;font-size:8px;font-weight:700}
 .scene-navigation button[aria-current=step]{border-color:var(--accent);background:var(--accent);color:#fff}
@@ -328,14 +369,17 @@ body{background-color:var(--paper);background-image:none}
     <section class="mid-banner" id="mid-banner" aria-labelledby="mid-banner-title"><img data-copy-image="hero-image-2" width="1672" height="941" alt="A sunlit mountain inlet with a boat on the water"><div class="mid-banner-shade" aria-hidden="true"></div><div class="mid-banner-copy"><p class="eyebrow">NO PLANS. BETTER PLANS.</p><h2 id="mid-banner-title">TAKE THE<br>LONG WAY.</h2><p>The best part of getting out there?<br>Making it your own.</p><button class="button button-brand" type="button" data-category="essentials">Explore the essentials <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></button></div><button class="mid-banner-caption scene-continue" type="button" data-scene-go="3" aria-label="Continue to more products">MORE GEAR BELOW <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v16m-6-6 6 6 6-6"/></svg></button></section>
     </div>
     </section>
-    <div class="scroll-scene scene-four" id="scene-4" aria-label="More products and stories">
+    <div class="scroll-scene scene-four" id="scene-4" aria-label="More products and our approach">
+    <div class="scene-panel">
+    <div class="secondary-pane">
     <section class="section secondary-collection" id="secondary-collection" aria-labelledby="secondary-title"><div class="section-heading"><div><p class="eyebrow">PACK FOR THE POSSIBILITY</p><h2 id="secondary-title">SMALL DETAILS.<br>BIG DIFFERENCE.</h2></div><p class="secondary-intro">A few good essentials.<br>A whole lot of possibility.</p></div><div class="product-grid product-rail" id="secondary-grid" tabindex="0" role="region" aria-label="More marine essentials"></div><div class="row-navigation"><span>GOOD THINGS TO BRING ALONG.</span><div><button type="button" data-rail="secondary-grid" data-direction="-1" aria-label="Scroll more products left"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12H4m6-6-6 6 6 6"/></svg></button><button type="button" data-rail="secondary-grid" data-direction="1" aria-label="Scroll more products right"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></button></div></div></section>
-
-
-    <section class="approach" id="approach" aria-labelledby="approach-title"><div class="approach-title"><p class="eyebrow">OUR KIND OF EVERYDAY</p><h2 id="approach-title">GOOD GEAR.<br>GREAT DAYS.</h2></div><div class="approach-copy"><span class="compass-mark" aria-hidden="true"><svg class="star-svg" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2v28M2 16h28M6.1 6.1l19.8 19.8M6.1 25.9 25.9 6.1"/></svg></span><p>That first turn out of the harbour. A quiet cove you’ve never found before. Just one more hour outside.</p><p>We’re here for the moments that make getting out there worth it. Find your essentials. Make your own plans.</p><button class="button button-brand" type="button" data-category="boats">Find your way out <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></button></div></section>
+    <div class="secondary-empty" id="secondary-empty" hidden><p class="eyebrow">KEEP EXPLORING</p><h2>MORE GOOD FINDS.</h2><p>You’ve seen all matching gear. Explore the full collection for more.</p><button class="button button-brand" type="button" data-category="all">Explore all gear <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></button></div>
+    </div>
+    <section class="approach approach-banner" id="approach" aria-labelledby="approach-title"><img class="approach-banner-photo" data-copy-image="hero-image-3" width="1672" height="941" alt="A powerboat crossing the open ocean"><div class="approach-banner-shade" aria-hidden="true"></div><div class="approach-title"><p class="eyebrow">OUR KIND OF EVERYDAY</p><h2 id="approach-title">GOOD GEAR.<br>GREAT DAYS.</h2></div><div class="approach-copy"><p>That first turn out of the harbour. A quiet cove you’ve never found before. Just one more hour outside.</p><p>We’re here for the moments that make getting out there worth it. Find your essentials. Make your own plans.</p></div><button class="button button-brand approach-button" type="button" data-category="boats">Find your way out <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></button><span class="compass-mark" aria-hidden="true"><svg class="star-svg" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2v28M2 16h28M6.1 6.1l19.8 19.8M6.1 25.9 25.9 6.1"/></svg></span></section>
+    </div>
+    </div>
 
     <section class="section field-notes" aria-labelledby="notes-title"><p class="eyebrow">A LITTLE KNOW-HOW GOES A LONG WAY</p><div class="notes-heading"><h2 id="notes-title">READY WHEN YOU ARE.</h2><p>Small details. Better days out.</p></div><div class="notes-grid"><article><span class="note-number">01</span><h3>Find your fit.</h3><p>Match your boat, crew and gear to the kind of days you want to have.</p><button class="text-button" type="button" data-category="boats">Explore boats <span aria-hidden="true"><svg class="arrow-svg up-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></span></button></article><article><span class="note-number">02</span><h3>Know your heading.</h3><p>Make room for reliable navigation, a good plan and a little curiosity.</p><button class="text-button" type="button" data-category="electronics">Explore electronics <span aria-hidden="true"><svg class="arrow-svg up-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></span></button></article><article><span class="note-number">03</span><h3>Pack the essentials.</h3><p>Protect what matters and keep the things you need close at hand.</p><button class="text-button" type="button" data-category="essentials">Explore essentials <span aria-hidden="true"><svg class="arrow-svg up-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></span></button></article></div></section>
-    </div>
   </main>
 
   <footer class="site-footer"><div class="footer-top"><div><p class="eyebrow">GO AHEAD. MAKE WAVES.</p><h2>SEE YOU<br>OUT THERE.</h2></div><div class="footer-links"><div><h3>THE COLLECTION</h3><button type="button" data-category="all">Shop all gear</button><button type="button" data-category="boats">Boats &amp; inflatables</button><button type="button" data-category="electronics">Marine electronics</button><button type="button" data-category="essentials">Parts &amp; essentials</button></div><div><h3>YOUR NEXT MOVE</h3><a href="#collections">Find your pursuit</a><a href="#approach">Our approach</a><button type="button" id="footer-saved">Saved gear</button><button type="button" id="concept-info">About this concept</button></div></div></div><div class="footer-bottom"><a href="#home" class="footer-wordmark">GA CHECKPOINT<span>.</span></a><span>MARINE / CANADA / CAD</span><a href="#home" class="back-top">Back to top <span aria-hidden="true"><svg class="arrow-svg up-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></span></a></div><p class="footer-disclaimer">Independent storefront concept. Products, imagery and prices are illustrative.</p></footer>
@@ -469,6 +513,7 @@ function renderCatalog(focusSavedId) {
   $('#product-grid').innerHTML = visible.slice(0,6).map(productMarkup).join('');
   $('#secondary-grid').innerHTML = visible.slice(6,12).map(productMarkup).join('');
   $('#secondary-collection').hidden = visible.length <= 6;
+  $('#secondary-empty').hidden = visible.length > 6;
   $('#mid-banner').hidden = false;
   $('#product-grid').hidden = !visible.length;
   $('#empty-state').hidden = !!visible.length;

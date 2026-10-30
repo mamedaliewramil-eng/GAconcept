@@ -113,6 +113,7 @@ function renderCatalog(focusSavedId) {
   $('#product-grid').innerHTML = visible.slice(0,6).map(productMarkup).join('');
   $('#secondary-grid').innerHTML = visible.slice(6,12).map(productMarkup).join('');
   $('#secondary-collection').hidden = visible.length <= 6;
+  $('#secondary-empty').hidden = visible.length > 6;
   $('#mid-banner').hidden = false;
   $('#product-grid').hidden = !visible.length;
   $('#empty-state').hidden = !!visible.length;
